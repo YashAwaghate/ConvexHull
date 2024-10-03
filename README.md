@@ -85,6 +85,6 @@ In the project directory, you can run:
 
 ## Contributors
 
-- **Kapil Sharma** - Research and implementation of convex hull algorithms.
-- **Yash Mahajan** - UI design and implementation of random point generation.
-- **Yash Awaghate** - Optimization and runtime comparison features.
+- **Kapil Sharma** 
+- **Yash Mahajan** 
+- **Yash Awaghate**
