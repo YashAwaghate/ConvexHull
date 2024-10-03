@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/YashAwaghate/ConvexHull/static/css/main.bcfe7039.css",
-    "main.js": "/YashAwaghate/ConvexHull/static/js/main.e83b0c31.js",
-    "static/js/453.1427b5ac.chunk.js": "/YashAwaghate/ConvexHull/static/js/453.1427b5ac.chunk.js",
-    "index.html": "/YashAwaghate/ConvexHull/index.html",
-    "main.bcfe7039.css.map": "/YashAwaghate/ConvexHull/static/css/main.bcfe7039.css.map",
-    "main.e83b0c31.js.map": "/YashAwaghate/ConvexHull/static/js/main.e83b0c31.js.map",
-    "453.1427b5ac.chunk.js.map": "/YashAwaghate/ConvexHull/static/js/453.1427b5ac.chunk.js.map"
+    "main.css": "/ConvexHull/static/css/main.bcfe7039.css",
+    "main.js": "/ConvexHull/static/js/main.c1dd667b.js",
+    "static/js/453.1427b5ac.chunk.js": "/ConvexHull/static/js/453.1427b5ac.chunk.js",
+    "index.html": "/ConvexHull/index.html",
+    "main.bcfe7039.css.map": "/ConvexHull/static/css/main.bcfe7039.css.map",
+    "main.c1dd667b.js.map": "/ConvexHull/static/js/main.c1dd667b.js.map",
+    "453.1427b5ac.chunk.js.map": "/ConvexHull/static/js/453.1427b5ac.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.bcfe7039.css",
-    "static/js/main.e83b0c31.js"
+    "static/js/main.c1dd667b.js"
   ]
 }
