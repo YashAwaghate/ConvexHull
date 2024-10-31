@@ -1,5 +1,6 @@
 // src/App.js
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 import './App.css';
 
 const ReportSection = ({ title, content }) => {
@@ -11,12 +12,45 @@ const ReportSection = ({ title, content }) => {
   );
 };
 
+const AlgorithmSection = ({ title, description, pseudocode, runAlgorithm, isLoading, currentAlgorithm }) => {
+  return (
+    <div className="algorithm-section">
+      <h3>{title}</h3>
+      <p>{description}</p>
+      <h4>Pseudocode:</h4>
+      <pre className="pseudocode">{pseudocode}</pre>
+      <button onClick={runAlgorithm} disabled={isLoading}>
+        {isLoading && currentAlgorithm === title.toLowerCase().replace(' ', '') ? `Running ${title}...` : `Run ${title}`}
+      </button>
+    </div>
+  );
+};
+
 const App = () => {
+  const [algorithmOutput, setAlgorithmOutput] = useState(''); // State for the output
+  const [isLoading, setIsLoading] = useState(false); // State to show a loading indicator
+  const [currentAlgorithm, setCurrentAlgorithm] = useState(''); // To track which algorithm is running
+
+  const runAlgorithm = async (algorithmName) => {
+    setIsLoading(true);
+    setCurrentAlgorithm(algorithmName);
+    try {
+      const response = await axios.get(`http://localhost:5001/run-${algorithmName}`);
+      setAlgorithmOutput(response.data.output);
+    } catch (error) {
+      console.error(`Error running ${algorithmName}:`, error);
+      setAlgorithmOutput(`An error occurred while running ${algorithmName}.`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="container">
       <h1>Convex Hull Visualization Tool</h1>
       <h3>Kapil Sharma (ks4643), Yash Mahajan (ym9800), Yash Awaghate (ya2390)</h3>
 
+      {/* Existing Description Section */}
       <ReportSection
         title="1. Description"
         content={
@@ -37,56 +71,171 @@ const App = () => {
         }
       />
 
+      {/* Implementations Section with Subsections for Each Algorithm */}
       <ReportSection
-        title="2. Timeline"
+        title="2. Implementations"
         content={
-          <table className="timeline">
-            <thead>
-              <tr>
-                <th>Week</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Week 1</td>
-                <td>Finalize convex hull algorithms to be implemented. Research and design UI wireframes.</td>
-              </tr>
-              <tr>
-                <td>Week 2</td>
-                <td>Set up the basic structure of the web app and create initial visualization for point generation (random/user-defined).</td>
-              </tr>
-              <tr>
-                <td>Week 3</td>
-                <td>Implement and visualize the Brute Force convex hull algorithm.</td>
-              </tr>
-              <tr>
-                <td>Week 4</td>
-                <td>Implement and visualize Jarvis March algorithm. Add explanatory content and pseudocode for the algorithms.</td>
-              </tr>
-              <tr>
-                <td>Week 5</td>
-                <td>Implement Graham Scan algorithm and add functionality to compare runtimes for different algorithms.</td>
-              </tr>
-              <tr>
-                <td>Week 6</td>
-                <td>Implement Divide & Conquer algorithm. Integrate speed control (slow/fast) for visualization.</td>
-              </tr>
-              <tr>
-                <td>Week 7</td>
-                <td>Implement Chan's Algorithm and add user options for runtime comparisons with varying numbers of points.</td>
-              </tr>
-              <tr>
-                <td>Week 8</td>
-                <td>Optimize the tool, test edge cases, finalize UI, and gather user feedback. Write documentation and prepare the final report.</td>
-              </tr>
-            </tbody>
-          </table>
+          <>
+            <AlgorithmSection
+              title="Brute Force"
+              description="The Brute Force algorithm iterates through all possible pairs of points to determine which points form the convex hull. It has a high time complexity but is conceptually simple."
+              pseudocode={`
+for each pair of points (p1, p2):
+  find line formed by p1 and p2
+  check if all other points are on the same side of the line
+  if yes, add (p1, p2) to the hull
+              `}
+              runAlgorithm={() => runAlgorithm('bruteforce')}
+              isLoading={isLoading}
+              currentAlgorithm={currentAlgorithm}
+            />
+
+            <AlgorithmSection
+              title="Divide & Conquer"
+              description="The Divide & Conquer algorithm splits the set of points into smaller subsets, finds the convex hull for each subset, and then merges them together."
+              pseudocode={`
+divide the set of points into two halves
+recursively find the convex hull of each half
+merge the two convex hulls to get the final result
+              `}
+              runAlgorithm={() => runAlgorithm('divide')}
+              isLoading={isLoading}
+              currentAlgorithm={currentAlgorithm}
+            />
+
+            <AlgorithmSection
+              title="Graham Scan"
+              description="The Graham Scan algorithm sorts points based on polar angles with respect to the lowest point and then constructs the hull using a stack."
+              pseudocode={`
+sort points by polar angle with respect to a reference point
+initialize an empty stack
+for each point:
+  while the top of the stack is not a left turn, pop it
+  push the current point onto the stack
+              `}
+              runAlgorithm={() => runAlgorithm('gramham')}
+              isLoading={isLoading}
+              currentAlgorithm={currentAlgorithm}
+            />
+
+            <AlgorithmSection
+              title="Jarvis March"
+              description="Jarvis March, also known as the Gift Wrapping algorithm, finds the convex hull by repeatedly selecting the leftmost point until returning to the starting point."
+              pseudocode={`
+start with the leftmost point
+repeat until you return to the starting point:
+  select the point with the smallest polar angle with respect to the current point
+  add it to the hull
+              `}
+              runAlgorithm={() => runAlgorithm('jarvis')}
+              isLoading={isLoading}
+              currentAlgorithm={currentAlgorithm}
+            />
+
+            <AlgorithmSection
+              title="Monotone Chain"
+              description="The Monotone Chain algorithm sorts the points and constructs the lower and upper hulls independently, combining them to get the convex hull."
+              pseudocode={`
+sort the points by x-coordinate
+construct the lower hull by iterating from left to right
+construct the upper hull by iterating from right to left
+combine the lower and upper hulls
+              `}
+              runAlgorithm={() => runAlgorithm('monotone')}
+              isLoading={isLoading}
+              currentAlgorithm={currentAlgorithm}
+            />
+          </>
         }
       />
 
+      {/* Output Section */}
+      {algorithmOutput && (
+        <ReportSection
+          title={`${currentAlgorithm.charAt(0).toUpperCase() + currentAlgorithm.slice(1)} Algorithm Output`}
+          content={
+            <div className="algorithm-output">
+              <p>{algorithmOutput}</p>
+            </div>
+          }
+        />
+      )}
+
+      {/* Existing Timeline Section */}
       <ReportSection
-        title="3. References"
+        title="3. Timeline"
+        content={
+  <table className="timeline">
+    <thead>
+      <tr>
+        <th>Week</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Week 1</td>
+        <td>Research and finalize the convex hull algorithms to be implemented. Start designing app.</td>
+      </tr>
+      <tr>
+        <td>Week 2</td>
+        <td>Set up the basic structure of the web app.</td>
+      </tr>
+      <tr>
+        <td>Week 3</td>
+        <td>Implement and visualize the Brute Force convex hull algorithm</td>
+      </tr>
+      <tr>
+        <td>Week 4</td>
+        <td>Implement and visualize the Jarvis March algorithm. Add pseudocode and explanatory content for the Brute Force and Jarvis March algorithms.</td>
+      </tr>
+      <tr>
+        <td>Week 5</td>
+        <td>Implement Graham Scan algorithm.</td>
+      </tr>
+      <tr>
+        <td>Week 6</td>
+        <td>Implement Divide & Conquer algorithm.</td>
+      </tr>
+      <tr>
+        <td>Week 7</td>
+        <td>Implement Monotone Algorithm and research about ways to add all visualizations.</td>
+      </tr>
+      <tr>
+        <td>Week 8</td>
+        <td>Implement Chan's Algorithm.</td>
+      </tr>
+      <tr>
+        <td>Week 9</td>
+        <td>Create initial visualization for point generation (random/user-defined). Set up basic canvas elements for visualizations
+          Test edge cases, debug, and refine the implementation of all algorithms</td>
+      </tr>
+      <tr>
+        <td>Week 10</td>
+        <td>Integrate speed control (slow/fast) for all visualizations. Optimize visualization performance</td>
+
+      </tr>
+      <tr>
+        <td>Week 11</td>
+        <td>Deploy backend and do integration.</td>
+      </tr>
+      <tr>
+        <td>Week 12</td>
+        <td>Finalize UI, gather user feedback, and polish the overall design and user experience.</td>
+      </tr>
+      <tr>
+        <td>Week 13</td>
+        <td>Write documentation, prepare the final report, and wrap up the project for presentation.</td>
+      </tr>
+    </tbody>
+  </table>
+}
+
+      />
+
+      {/* References Section */}
+      <ReportSection
+        title="4. References"
         content={
           <ul>
             <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API">WebGL API Documentation</a></li>
@@ -99,8 +248,9 @@ const App = () => {
         }
       />
 
+      {/* Work Division Section */}
       <ReportSection
-        title="4. Work Division"
+        title="5. Work Division"
         content={
           <>
             <h4>Kapil Sharma:</h4>
