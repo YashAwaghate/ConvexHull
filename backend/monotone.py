@@ -3,6 +3,18 @@ import matplotlib.animation as animation
 from collections import namedtuple
 import random
 
+def file_to_fixed_points(filename):
+    fixed_points = []
+    with open(filename, 'r') as file:
+        for line in file:
+            values = line.strip().split()
+            if len(values) == 2:
+                x, y = map(int, values)
+                fixed_points.append(Point(x, y))
+            else:
+                print(f"Skipping line: {line.strip()} (does not contain exactly two values)")        
+    return fixed_points
+
 # Define a simple Point class
 Point = namedtuple('Point', 'x y')
 
@@ -46,7 +58,7 @@ def generate_random_points(n, xlim, ylim):
 
 # Generate random points
 num_points = 20  # Number of random points to generate
-points = generate_random_points(num_points, 100, 100)
+points = file_to_fixed_points("input.txt")
 convex_hull, steps = monotone_chain(points)
 
 # Create the animation

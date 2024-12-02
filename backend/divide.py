@@ -5,6 +5,18 @@ from collections import namedtuple
 from functools import cmp_to_key
 import random
 
+def file_to_fixed_points(filename):
+    fixed_points = []
+    with open(filename, 'r') as file:
+        for line in file:
+            values = line.strip().split()
+            if len(values) == 2:
+                x, y = map(int, values)
+                fixed_points.append(Point(x, y))
+            else:
+                print(f"Skipping line: {line.strip()} (does not contain exactly two values)")        
+    return fixed_points
+
 # Define a simple Point class
 Point = namedtuple('Point', 'x y')
 
@@ -149,6 +161,7 @@ ax.set_ylim(-100, 100)
 # Generate random points
 num_points = 20
 random_points = [Point(random.randint(-100, 100), random.randint(-100, 100)) for _ in range(num_points)]
+# random_points = file_to_fixed_points("input.txt")
 random_points.sort(key=lambda p: (p.x, p.y))
 
 # Compute convex hull with divide and conquer and record frames for animation

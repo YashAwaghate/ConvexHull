@@ -2,6 +2,20 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+import sys
+
+def file_to_fixed_points(filename):
+    fixed_points = []
+    with open(filename, 'r') as file:
+        for line in file:
+            values = line.strip().split()
+            if len(values) == 2:
+                x, y = map(int, values)
+                fixed_points.append(Point(x, y))
+            else:
+                print(f"Skipping line: {line.strip()} (does not contain exactly two values)")        
+    return fixed_points
+
 
 class Point:
     def __init__(self, x: int, y: int):
@@ -104,11 +118,7 @@ hull_lines, = ax.plot([], [], 'r-', lw=2)  # Red line for finalized edges
 hull_vertices, = ax.plot([], [], 'ro')     # Red points for hull vertices
 
 # Fixed set of 10 points for testing
-fixed_points = [
-    Point(10, 20), Point(30, 15), Point(50, 80), Point(70, 50),
-    Point(20, 90), Point(90, 10), Point(60, 40), Point(40, 70),
-    Point(80, 85), Point(15, 60)
-]
+fixed_points = file_to_fixed_points("input.txt")
 convex_hull = ConvexHullBruteForce(fixed_points)
 
 # Compute the convex hull before animation

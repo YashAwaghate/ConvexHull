@@ -6,6 +6,18 @@ from collections import namedtuple
 from functools import cmp_to_key
 import random
 
+def file_to_fixed_points(filename):
+    fixed_points = []
+    with open(filename, 'r') as file:
+        for line in file:
+            values = line.strip().split()
+            if len(values) == 2:
+                x, y = map(int, values)
+                fixed_points.append(Point(x, y))
+            else:
+                print(f"Skipping line: {line.strip()} (does not contain exactly two values)")        
+    return fixed_points
+
 # Define a simple Point class
 Point = namedtuple('Point', 'x y')
 
@@ -82,6 +94,7 @@ point_marker, = ax.plot([], [], 'go')             # Green marker for the current
 # Generate a random set of points
 num_points = 10  # Number of random points
 random_points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(num_points)]
+# random_points = file_to_fixed_points("input.txt")
 
 # Compute the convex hull and steps for visualization
 hull, steps = convex_hull(random_points)

@@ -2,6 +2,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.animation import FuncAnimation
 
+def file_to_numpy_array(filename):
+    data = []
+    with open(filename, 'r') as file:
+        for line in file:
+            values = line.strip().split()
+            if len(values) == 2:  # Ensure two values per line
+                data.append(list(map(float, values)))  # Convert to floats
+            else:
+                print(f"Skipping line: {line.strip()} (does not contain exactly two values)")
+    
+    # Convert the list of lists to a NumPy array
+    return np.array(data)
+
 def leftmost_point(points):
     """Returns the index of the leftmost point in the list of points."""
     return min(range(len(points)), key=lambda i: points[i][0])
@@ -74,5 +87,6 @@ def gift_wrapping_animation(points):
     plt.show()
 
 
-points = np.random.rand(10, 2) * 100
+# points = np.random.rand(10, 2) * 100
+points = file_to_numpy_array("input.txt")
 gift_wrapping_animation(points)

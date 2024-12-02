@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './App.css';
+import UserInput from './UserInput';
 
 const ReportSection = ({ title, content }) => {
   return (
@@ -12,13 +13,14 @@ const ReportSection = ({ title, content }) => {
   );
 };
 
-const AlgorithmSection = ({ title, description, pseudocode, runAlgorithm, isLoading, currentAlgorithm }) => {
+const AlgorithmSection = ({ title, description, pseudocode, runAlgorithm, isLoading, currentAlgorithm, setPayload }) => {
   return (
     <div className="algorithm-section">
       <h3>{title}</h3>
       <p>{description}</p>
       <h4>Pseudocode:</h4>
       <pre className="pseudocode">{pseudocode}</pre>
+      <UserInput setPayload={setPayload}/>
       <button onClick={runAlgorithm} disabled={isLoading}>
         {isLoading && currentAlgorithm === title.toLowerCase().replace(' ', '') ? `Running ${title}...` : `Run ${title}`}
       </button>
@@ -30,12 +32,16 @@ const App = () => {
   const [algorithmOutput, setAlgorithmOutput] = useState(''); // State for the output
   const [isLoading, setIsLoading] = useState(false); // State to show a loading indicator
   const [currentAlgorithm, setCurrentAlgorithm] = useState(''); // To track which algorithm is running
+  const [payload, setPayload] = useState([])
 
   const runAlgorithm = async (algorithmName) => {
     setIsLoading(true);
     setCurrentAlgorithm(algorithmName);
+    console.log(payload)
     try {
-      const response = await axios.get(`http://localhost:5001/run-${algorithmName}`);
+      const response = await axios.post(`http://localhost:5001/run-${algorithmName}`, {
+        payload
+      });
       setAlgorithmOutput(response.data.output);
     } catch (error) {
       console.error(`Error running ${algorithmName}:`, error);
@@ -88,6 +94,7 @@ for each pair of points (p1, p2):
               runAlgorithm={() => runAlgorithm('bruteforce')}
               isLoading={isLoading}
               currentAlgorithm={currentAlgorithm}
+              setPayload={setPayload}
             />
 
             <AlgorithmSection
@@ -101,6 +108,7 @@ merge the two convex hulls to get the final result
               runAlgorithm={() => runAlgorithm('divide')}
               isLoading={isLoading}
               currentAlgorithm={currentAlgorithm}
+              setPayload={setPayload}
             />
 
             <AlgorithmSection
@@ -116,6 +124,7 @@ for each point:
               runAlgorithm={() => runAlgorithm('gramham')}
               isLoading={isLoading}
               currentAlgorithm={currentAlgorithm}
+              setPayload={setPayload}
             />
 
             <AlgorithmSection
@@ -130,6 +139,7 @@ repeat until you return to the starting point:
               runAlgorithm={() => runAlgorithm('jarvis')}
               isLoading={isLoading}
               currentAlgorithm={currentAlgorithm}
+              setPayload={setPayload}
             />
 
             <AlgorithmSection
@@ -144,6 +154,7 @@ combine the lower and upper hulls
               runAlgorithm={() => runAlgorithm('monotone')}
               isLoading={isLoading}
               currentAlgorithm={currentAlgorithm}
+              setPayload={setPayload}
             />
           </>
         }
