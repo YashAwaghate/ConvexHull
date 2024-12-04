@@ -6,20 +6,24 @@ from collections import namedtuple
 from functools import cmp_to_key
 import random
 
-def file_to_fixed_points(filename):
-    fixed_points = []
-    with open(filename, 'r') as file:
-        for line in file:
-            values = line.strip().split()
-            if len(values) == 2:
-                x, y = map(int, values)
-                fixed_points.append(Point(x, y))
-            else:
-                print(f"Skipping line: {line.strip()} (does not contain exactly two values)")        
-    return fixed_points
-
 # Define a simple Point class
 Point = namedtuple('Point', 'x y')
+
+# Function to read points from a file
+def file_to_fixed_points(filename):
+    fixed_points = []
+    try:
+        with open(filename, 'r') as file:
+            for line in file:
+                values = line.strip().split()
+                if len(values) == 2:
+                    x, y = map(int, values)
+                    fixed_points.append(Point(x, y))
+                else:
+                    print(f"Skipping line: {line.strip()} (does not contain exactly two values)")
+    except FileNotFoundError:
+        print(f"{filename} not found.")
+    return fixed_points
 
 # Function to find the orientation of the triplet (p, q, r)
 def orientation(p, q, r):
@@ -81,6 +85,19 @@ def convex_hull(points):
 
     return S, steps
 
+# Check if input.txt is empty or not
+num_points = 10  # Number of random points
+points_from_file = file_to_fixed_points("input.txt")
+if points_from_file:
+    random_points = points_from_file
+    print(f"Using {len(random_points)} points from input.txt.")
+else:
+    print("Input file is empty or not found. Generating random points.")
+    random_points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(num_points)]
+
+# Compute the convex hull and steps for visualization
+hull, steps = convex_hull(random_points)
+
 # Visualization setup
 fig, ax = plt.subplots()
 ax.set_xlim(0, 100)
@@ -90,14 +107,6 @@ tentative_line, = ax.plot([], [], 'grey', lw=2)  # Grey line for tentative edges
 finalized_line, = ax.plot([], [], 'r-', lw=2)    # Red line for finalized hull edges
 start_marker, = ax.plot([], [], 'yo')             # Yellow marker for the start point
 point_marker, = ax.plot([], [], 'go')             # Green marker for the current point being processed
-
-# Generate a random set of points
-num_points = 10  # Number of random points
-random_points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(num_points)]
-# random_points = file_to_fixed_points("input.txt")
-
-# Compute the convex hull and steps for visualization
-hull, steps = convex_hull(random_points)
 
 def animate(frame):
     # Display all points
@@ -134,7 +143,7 @@ def animate(frame):
 
 # Create the animation
 anim = FuncAnimation(fig, animate, frames=len(steps) + 10, interval=500, repeat=False)
-plt.title("Convex Hull Construction with Graham Scan (Random Points)")
+plt.title("Convex Hull Construction with Graham Scan")
 plt.xlabel("X")
 plt.ylabel("Y")
 plt.show()
