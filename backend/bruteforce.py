@@ -2,20 +2,22 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-import sys
+import random
 
 def file_to_fixed_points(filename):
     fixed_points = []
-    with open(filename, 'r') as file:
-        for line in file:
-            values = line.strip().split()
-            if len(values) == 2:
-                x, y = map(int, values)
-                fixed_points.append(Point(x, y))
-            else:
-                print(f"Skipping line: {line.strip()} (does not contain exactly two values)")        
+    try:
+        with open(filename, 'r') as file:
+            for line in file:
+                values = line.strip().split()
+                if len(values) == 2:
+                    x, y = map(int, values)
+                    fixed_points.append(Point(x, y))
+                else:
+                    print(f"Skipping line: {line.strip()} (does not contain exactly two values)")
+    except FileNotFoundError:
+        print(f"{filename} not found.")
     return fixed_points
-
 
 class Point:
     def __init__(self, x: int, y: int):
@@ -117,8 +119,12 @@ check_line, = ax.plot([], [], 'g-', lw=1)
 hull_lines, = ax.plot([], [], 'r-', lw=2)  # Red line for finalized edges
 hull_vertices, = ax.plot([], [], 'ro')     # Red points for hull vertices
 
-# Fixed set of 10 points for testing
+# Try reading from input file
 fixed_points = file_to_fixed_points("input.txt")
+if not fixed_points:
+    print("Input file is empty or not found. Generating 10 random points.")
+    fixed_points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(10)]
+
 convex_hull = ConvexHullBruteForce(fixed_points)
 
 # Compute the convex hull before animation
@@ -126,7 +132,7 @@ convex_hull.compute_convex_hull()
 
 # Create the animation
 anim = FuncAnimation(fig, convex_hull.animate, frames=len(convex_hull.intermediate_steps) + len(convex_hull.finalized_edges), interval=500, repeat=False)
-plt.title("Convex Hull Construction with Brute Force (Fixed Points)")
+plt.title("Convex Hull Construction with Brute Force (Fixed or Random Points)")
 plt.xlabel("X")
 plt.ylabel("Y")
 plt.show()
