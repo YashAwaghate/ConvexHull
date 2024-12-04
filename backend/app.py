@@ -18,9 +18,20 @@ def run_script(script_name):
 
 def write_array_to_file(data, filename):
     with open(filename, 'w') as file:
-        for row in data['payload']:
-            # Convert each row to a space-separated string and write to the file
-            file.write(' '.join(map(str, row)) + '\n')
+        if isinstance(data, dict) and 'payload' in data:
+            # JSON Input
+            for row in data['payload']:
+                print(row)  # Debugging
+                file.write(' '.join(map(str, row)) + '\n')
+        elif isinstance(data, str):
+            # Plain text input: Convert to rows
+            lines = data.strip().split('\n')
+            for line in lines:
+                print(line.strip().split())  # Debugging
+                file.write(line.strip() + '\n')
+        else:
+            raise ValueError("Unsupported input format. Expected JSON or plain text.")
+
 
 
 @app.route('/run-bruteforce', methods=['POST'])
@@ -29,11 +40,29 @@ def run_bruteforce():
     write_array_to_file(data, 'input.txt')
     return run_script('bruteforce.py')
 
+# @app.route('/run-divide', methods=['POST'])
+# def run_divide():
+#     data = request.get_json()
+#     write_array_to_file(data, 'input.txt')
+#     return run_script('divide.py')
 @app.route('/run-divide', methods=['POST'])
 def run_divide():
-    data = request.get_json()
-    write_array_to_file(data, 'input.txt')
+    # Log raw request data for debugging
+    raw_data = request.get_data(as_text=True)
+    print(f"Raw received data: {raw_data}")  # Log raw input
+
+    try:
+        # Parse the request as JSON
+        json_data = request.get_json()
+        print(f"Parsed JSON data: {json_data}")  # Log parsed JSON
+        write_array_to_file(json_data, 'input.txt')
+    except Exception as e:
+        print(f"Error parsing JSON: {e}")
+        return jsonify({"error": "Invalid input format"}), 400
+
     return run_script('divide.py')
+
+
 
 @app.route('/run-gramham', methods=['POST'])
 def run_gramham():
