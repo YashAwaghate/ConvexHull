@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from collections import namedtuple
 from functools import cmp_to_key
+import random
 
 # Define a simple Point class
 Point = namedtuple('Point', 'x y')
@@ -13,18 +14,30 @@ mid = Point(0, 0)
 # Read points from a file
 def file_to_fixed_points(filename):
     fixed_points = []
-    with open(filename, 'r') as file:
-        for line in file:
-            values = line.strip().split()
-            if len(values) == 2:
-                try:
-                    x, y = map(int, values)
-                    fixed_points.append(Point(x, y))
-                except ValueError:
-                    print(f"Skipping line: {line.strip()} (contains non-integer values)")
-            else:
-                print(f"Skipping line: {line.strip()} (does not contain exactly two values)")
+    try:
+        with open(filename, 'r') as file:
+            for line in file:
+                values = line.strip().split()
+                if len(values) == 2:
+                    try:
+                        x, y = map(int, values)
+                        fixed_points.append(Point(x, y))
+                    except ValueError:
+                        print(f"Skipping line: {line.strip()} (contains non-integer values)")
+                else:
+                    print(f"Skipping line: {line.strip()} (does not contain exactly two values)")
+    except FileNotFoundError:
+        print(f"File {filename} not found. Generating random points.")
     return fixed_points
+
+# Generate random points
+def generate_random_points(n, range_min=-100, range_max=100):
+    return [Point(random.randint(range_min, range_max), random.randint(range_min, range_max)) for _ in range(n)]
+
+# Clear the contents of a file
+def clear_file(filename):
+    with open(filename, 'w') as file:
+        file.write("")  # Truncate the file by writing an empty string
 
 # Determines the quadrant of the point (used in compare())
 def quad(p):
@@ -156,18 +169,22 @@ def divide(points, frames):
     # Merging the convex hulls
     return merger(left_hull, right_hull, frames)
 
-# Visualization setup
-fig, ax = plt.subplots()
-ax.set_xlim(-100, 100)
-ax.set_ylim(-100, 100)
-
-# Read points from file
+# Read points from file or generate random points if file is empty
 random_points = file_to_fixed_points("input.txt")
 if not random_points:
-    print("No valid points found in the file.")
-    exit(1)
+    print("No valid points found in the file. Generating random points.")
+    random_points = generate_random_points(20)
 
 random_points.sort(key=lambda p: (p.x, p.y))
+
+# Calculate dynamic plot limits
+x_values = [p.x for p in random_points]
+y_values = [p.y for p in random_points]
+x_min, x_max = min(x_values) - 10, max(x_values) + 10
+y_min, y_max = min(y_values) - 10, max(y_values) + 10
+
+# Visualization setup
+fig, ax = plt.subplots()
 
 # Compute convex hull with divide and conquer and record frames for animation
 frames = []
@@ -176,11 +193,11 @@ hull = divide(random_points, frames)
 # Animation function
 def animate(frame_idx):
     ax.clear()
-    ax.set_xlim(-100, 100)
-    ax.set_ylim(-100, 100)
+    ax.set_xlim(x_min, x_max)
+    ax.set_ylim(y_min, y_max)
 
     # Plot all points
-    ax.scatter([p.x for p in random_points], [p.y for p in random_points], color='blue')
+    ax.scatter(x_values, y_values, color='blue')
 
     # Get current frame data
     left_hull, right_hull, merged_hull = frames[frame_idx]
@@ -212,3 +229,7 @@ plt.title("Divide and Conquer Convex Hull (Animation)")
 plt.xlabel("X")
 plt.ylabel("Y")
 plt.show()
+
+# Clear the file after the algorithm is run
+clear_file("input.txt")
+print("File cleared after running the algorithm.")
