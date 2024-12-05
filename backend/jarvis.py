@@ -50,7 +50,7 @@ def gift_wrapping_animation(points):
 
     fig, ax = plt.subplots()
     ax.set_title(
-        "Gift Wrapping Algorithm Animation with Retracting Failed Attempts")
+        "Gift Wrapping Algorithm Animation")
     plt.scatter(*zip(*points), color='blue')  # Plot all points
 
     hull = []

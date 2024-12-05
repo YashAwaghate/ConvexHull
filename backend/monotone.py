@@ -113,7 +113,7 @@ def update(frame):
 ani = animation.FuncAnimation(fig, update, frames=len(steps), blit=True,
                               repeat=False)
 
-plt.title("Convex Hull Construction (Input or Random Points)")
+plt.title("Convex Hull Construction using Monotone)")
 plt.xlabel("X")
 plt.ylabel("Y")
 plt.show()
