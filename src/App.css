@@ -1,61 +1,253 @@
 /* src/App.css */
+
+/* Base Styles */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    font-family: 'Roboto', sans-serif;
+    background-color: #1c1e26; /* Dark theme */
+    color: #f5f5f5; /* Light text for contrast */
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
+/* Container */
 .container {
-    max-width: 800px;
-    margin: auto;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 90%;
+    width: 1200px;
+    margin: 20px auto;
+    background: #262a34; /* Slightly lighter than body for contrast */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+    color: #e0e0e0;
+    display: flex;
+    flex-direction: column;
 }
 
+/* Header */
 h1 {
-    color: #333;
+    color: #ff9500; /* Vibrant accent color */
     text-align: center;
-}
-
-h2 {
-    color: #666;
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 5px;
-}
-
-h3 {
-    color: #444;
-    text-align: center;
-}
-
-h4 {
-    color: #444;
-    margin-top: 10px;
-}
-
-p, ul {
-    line-height: 1.6;
-}
-
-.section {
+    font-size: 2.5em;
     margin-bottom: 20px;
 }
 
+h2 {
+    color: #ffa726; /* Secondary accent */
+    border-bottom: 2px solid #ff9500;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    font-size: 1.8em;
+}
+
+h3 {
+    color: #ffa726;
+    text-align: center;
+    font-size: 1.6em;
+    margin-bottom: 10px;
+}
+
+h4 {
+    color: #f5f5f5;
+    font-size: 1.4em;
+    margin-top: 15px;
+}
+
+/* Text and Lists */
+p, ul {
+    line-height: 1.8;
+    font-size: 1.1em;
+    margin: 10px 0;
+}
+
+/* Section */
+.section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #2d313a; /* Card-style sections */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Buttons */
+button {
+    background-color: #ff9500;
+    color: #fff;
+    font-size: 1.1em;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: flex-start;
+}
+
+button:hover {
+    background-color: #ffa726;
+}
+
+button:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+}
+
+/* Algorithm Section */
+.algorithm-section {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.pseudocode {
+    background: #333;
+    color: #e0e0e0;
+    padding: 15px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: 'Courier New', monospace;
+    margin-bottom: 10px;
+}
+
+/* Tables */
 .timeline {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    margin-top: 15px;
+    font-size: 1.1em;
 }
 
 .timeline th, .timeline td {
-    border: 1px solid #ddd;
-    padding: 8px;
+    border: 1px solid #555;
+    padding: 10px;
     text-align: left;
 }
 
 .timeline th {
-    background-color: #f2f2f2;
+    background-color: #444;
+    color: #fff;
+}
+
+.timeline td {
+    background-color: #2d313a;
+}
+
+/* Links */
+a {
+    color: #ffa726;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #ffcc80;
+}
+
+/* Algorithm Output */
+.algorithm-output {
+    background-color: #2d313a;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 1.2em;
+}
+
+/* Flexbox for Responsiveness */
+.algorithm-section h3 {
+    color: #ffa726;
+    font-size: 1.8rem; /* Increase font size */
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* Input Format Section */
+.user-input p {
+    font-size: 0.9rem;
+    color: #aaa; /* Greyed-out instructions */
+    margin-bottom: 5px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .container {
+        max-width: 95%;
+    }
+}
+.input-box {
+    width: 100%;
+    padding: 10px 15px;
+    margin: 10px 0;
+    font-size: 1em;
+    color: #fff; /* Text color */
+    background-color: #2d313a; /* Input background color */
+    border: 1px solid #444; /* Border for the input box */
+    border-radius: 5px;
+    outline: none; /* Remove default outline */
+    transition: border-color 0.3s ease-in-out;
+}
+
+.input-box:focus {
+    border-color: #ff9500; /* Highlight border on focus */
+}
+
+.input-box::placeholder {
+    color: #888; /* Greyed-out placeholder text */
+    font-style: italic; /* Optional: makes placeholder stand out */
+}
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2em;
+    }
+
+    h2 {
+        font-size: 1.5em;
+    }
+
+    h3 {
+        font-size: 1.3em;
+    }
+
+    p, ul {
+        font-size: 1em;
+    }
+
+    button {
+        font-size: 1em;
+        padding: 8px 16px;
+    }
+
+    .section {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.8em;
+    }
+
+    h2 {
+        font-size: 1.4em;
+    }
+
+    h3 {
+        font-size: 1.2em;
+    }
+
+    p, ul {
+        font-size: 0.95em;
+    }
+
+    button {
+        font-size: 0.95em;
+    }
 }
