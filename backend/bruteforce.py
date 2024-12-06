@@ -140,15 +140,11 @@ def main():
     plt.xlabel("X")
     plt.ylabel("Y")
 
-    # Create a BytesIO buffer
     buffer = io.BytesIO()
+    
+    anim.save(buffer, writer=PillowWriter(fps=2))
 
-    # Use the PillowWriter to save the animation into the buffer
-    writer = PillowWriter(fps=2)  # Adjust fps as needed
-    anim.save(buffer, writer=writer)
-
-    # Encode the buffer content to base64
-    buffer.seek(0)  # Reset buffer pointer
+    buffer.seek(0)
     data = base64.b64encode(buffer.read()).decode('ascii')
     print("Output File Saved")
     return data
