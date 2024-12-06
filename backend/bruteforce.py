@@ -5,6 +5,7 @@ from matplotlib.animation import FuncAnimation, PillowWriter
 import random
 import io
 import base64
+from PIL import Image
 
 
 def file_to_fixed_points(filename):
@@ -140,12 +141,29 @@ def main():
     plt.xlabel("X")
     plt.ylabel("Y")
 
-    buffer = io.BytesIO()
-    
-    anim.save(buffer, writer=PillowWriter(fps=2))
+    # Collect the frames
+    frames = []
+    for i in range(anim.save_count):
+        anim._draw_next_frame(dbg=False)  # Force draw the next frame
+        buffer = io.BytesIO()
+        fig.savefig(buffer, format="png")  # Save current frame as PNG to buffer
+        buffer.seek(0)
+        frame = Image.open(buffer)
+        frames.append(frame)
+        buffer.close()
 
-    buffer.seek(0)
-    data = base64.b64encode(buffer.read()).decode('ascii')
+    # Save all frames as a GIF into BytesIO using Pillow
+    gif_buffer = io.BytesIO()
+    frames[0].save(
+        gif_buffer,
+        format="GIF",
+        save_all=True,
+        append_images=frames[1:],
+        duration=500,  # Match the animation interval
+        loop=0
+    )
+    gif_buffer.seek(0)
+    data = base64.b64encode(gif_buffer.read()).decode('ascii')
     print("Output File Saved")
     return data
 
