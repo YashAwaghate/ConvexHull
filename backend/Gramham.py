@@ -146,4 +146,4 @@ anim = FuncAnimation(fig, animate, frames=len(steps) + 10, interval=500, repeat=
 plt.title("Convex Hull Construction with Graham Scan")
 plt.xlabel("X")
 plt.ylabel("Y")
-plt.show()
+anim.save("output.gif", writer="pillow")

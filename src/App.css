@@ -155,6 +155,11 @@ a:hover {
     font-size: 1.2em;
 }
 
+.algorithm-output img{
+    height: 100%;
+    width: 100%;
+}
+
 /* Flexbox for Responsiveness */
 .algorithm-section h3 {
     color: #ffa726;

@@ -24,6 +24,7 @@ const AlgorithmSection = ({ title, description, pseudocode, runAlgorithm, isLoad
       <button onClick={runAlgorithm} disabled={isLoading}>
         {isLoading && currentAlgorithm === title.toLowerCase().replace(' ', '') ? `Running ${title}...` : `Run ${title}`}
       </button>
+      <div>{}</div>
     </div>
   );
 };
@@ -33,16 +34,17 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false); // State to show a loading indicator
   const [currentAlgorithm, setCurrentAlgorithm] = useState(''); // To track which algorithm is running
   const [payload, setPayload] = useState([])
-
+  const [output, setOutput] = useState("")
   const runAlgorithm = async (algorithmName) => {
     setIsLoading(true);
     setCurrentAlgorithm(algorithmName);
     console.log(payload)
     try {
-      const response = await axios.post(`http://localhost:5001/run-${algorithmName}`, {
+      const response = await axios.post(`https://convex-hull-backend-1.vercel.app/run-${algorithmName}`, {
         payload
       });
-      setAlgorithmOutput(response.data.output);
+      console.log(response)
+      setAlgorithmOutput(response.data);
     } catch (error) {
       console.error(`Error running ${algorithmName}:`, error);
       setAlgorithmOutput(`An error occurred while running ${algorithmName}.`);
@@ -166,7 +168,7 @@ combine the lower and upper hulls
           title={`${currentAlgorithm.charAt(0).toUpperCase() + currentAlgorithm.slice(1)} Algorithm Output`}
           content={
             <div className="algorithm-output">
-              <p>{algorithmOutput}</p>
+              <img src={algorithmOutput} alt="Base64 Image" />
             </div>
           }
         />

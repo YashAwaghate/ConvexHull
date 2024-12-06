@@ -2,6 +2,9 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import subprocess
 import os
+import base64
+from io import BytesIO
+from matplotlib.figure import Figure
 
 app = Flask(__name__)
 CORS(app)  # Allow cross-origin requests
@@ -32,13 +35,15 @@ def write_array_to_file(data, filename):
         else:
             raise ValueError("Unsupported input format. Expected JSON or plain text.")
 
-
-
 @app.route('/run-bruteforce', methods=['POST'])
 def run_bruteforce():
     data = request.get_json()
     write_array_to_file(data, 'input.txt')
-    return run_script('bruteforce.py')
+    run_script('bruteforce.py')
+    with open('output.gif', 'rb') as gif_file:
+        buf = gif_file.read()
+    image_data = base64.b64encode(buf).decode("ascii")    
+    return f"data:image/png;base64,{image_data}"
 
 # @app.route('/run-divide', methods=['POST'])
 # def run_divide():
@@ -60,7 +65,11 @@ def run_divide():
         print(f"Error parsing JSON: {e}")
         return jsonify({"error": "Invalid input format"}), 400
 
-    return run_script('divide.py')
+    run_script('divide.py')
+    with open('output.gif', 'rb') as gif_file:
+        buf = gif_file.read()
+    image_data = base64.b64encode(buf).decode("ascii")
+    return f"data:image/png;base64,{image_data}"
 
 
 
@@ -69,7 +78,11 @@ def run_gramham():
     data = request.get_json()
     print(data)
     write_array_to_file(data, 'input.txt')
-    return run_script('Gramham.py')
+    run_script('Gramham.py')
+    with open('output.gif', 'rb') as gif_file:
+        buf = gif_file.read()
+    image_data = base64.b64encode(buf).decode("ascii")
+    return f"data:image/png;base64,{image_data}"
 
 @app.route('/run-jarvis', methods=['POST'])
 def run_jarvis():

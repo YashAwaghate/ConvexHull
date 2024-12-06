@@ -230,4 +230,4 @@ ani = FuncAnimation(fig, animate, frames=len(frames), interval=1000, repeat=Fals
 plt.title("Divide and Conquer Convex Hull (Animation)")
 plt.xlabel("X")
 plt.ylabel("Y")
-plt.show()
+ani.save("output.gif", writer="pillow")

@@ -120,7 +120,7 @@ hull_lines, = ax.plot([], [], 'r-', lw=2)  # Red line for finalized edges
 hull_vertices, = ax.plot([], [], 'ro')     # Red points for hull vertices
 
 # Try reading from input file
-fixed_points = file_to_fixed_points("input.txt")
+fixed_points = None
 if not fixed_points:
     print("Input file is empty or not found. Generating 10 random points.")
     fixed_points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(10)]
@@ -135,4 +135,4 @@ anim = FuncAnimation(fig, convex_hull.animate, frames=len(convex_hull.intermedia
 plt.title("Convex Hull Construction with Brute Force (Fixed or Random Points)")
 plt.xlabel("X")
 plt.ylabel("Y")
-plt.show()
+anim.save("output.gif", writer="pillow")
