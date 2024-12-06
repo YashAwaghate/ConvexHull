@@ -1,7 +1,7 @@
 import math
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+from matplotlib.animation import FuncAnimation, PillowWriter
 import random
 import io
 import base64
@@ -140,9 +140,15 @@ def main():
     plt.xlabel("X")
     plt.ylabel("Y")
 
+    # Create a BytesIO buffer
     buffer = io.BytesIO()
-    anim.save(buffer, format='gif', writer='pillow')
-    buffer.seek(0)  
+
+    # Use the PillowWriter to save the animation into the buffer
+    writer = PillowWriter(fps=2)  # Adjust fps as needed
+    anim.save(buffer, writer=writer)
+
+    # Encode the buffer content to base64
+    buffer.seek(0)  # Reset buffer pointer
     data = base64.b64encode(buffer.getvalue()).decode('ascii')
     print("Output File Saved")
     return data
