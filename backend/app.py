@@ -39,6 +39,7 @@ def write_array_to_file(data, filename):
 def run_bruteforce():
     data = request.get_json()
     # write_array_to_file(data, 'input.txt')
+    main()
     with open('/tmp/output.gif', 'rb') as gif_file:
         buf = gif_file.read()
     print("Image Data Read")
