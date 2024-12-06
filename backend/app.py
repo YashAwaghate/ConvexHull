@@ -42,6 +42,7 @@ def run_bruteforce():
     run_script('bruteforce.py')
     with open('output.gif', 'rb') as gif_file:
         buf = gif_file.read()
+    print("Image Data Read")
     image_data = base64.b64encode(buf).decode("ascii")    
     return f"data:image/png;base64,{image_data}"
 
