@@ -149,7 +149,7 @@ def main():
 
     # Encode the buffer content to base64
     buffer.seek(0)  # Reset buffer pointer
-    data = base64.b64encode(buffer.getvalue()).decode('ascii')
+    data = base64.b64encode(buffer.read()).decode('ascii')
     print("Output File Saved")
     return data
 
