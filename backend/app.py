@@ -38,7 +38,7 @@ def write_array_to_file(data, filename):
 @app.route('/run-bruteforce', methods=['POST'])
 def run_bruteforce():
     data = request.get_json()
-    write_array_to_file(data, 'input.txt')
+    # write_array_to_file(data, 'input.txt')
     run_script('bruteforce.py')
     with open('output.gif', 'rb') as gif_file:
         buf = gif_file.read()
