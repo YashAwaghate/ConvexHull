@@ -5,6 +5,7 @@ from matplotlib.animation import FuncAnimation
 import random
 import base64
 import io
+from PIL import Image
 
 def main():
     class Point:
@@ -123,9 +124,30 @@ def main():
     plt.title("Convex Hull Construction with Brute Force (Fixed or Random Points)")
     plt.xlabel("X")
     plt.ylabel("Y")
+    # Generate frames as PIL images
     buf = io.BytesIO()
-    anim.save(buf, fps=5)
+    frames = []
+
+    for i in range(anim.save_count):
+        anim._draw_frame(i)  # Render the frame
+        fig.canvas.draw()  # Update the canvas
+        img = Image.frombytes(
+            'RGB', fig.canvas.get_width_height(), fig.canvas.tostring_rgb()
+        )
+        frames.append(img)
+
+    # Save the frames as a GIF to the buffer
+    frames[0].save(
+        buf,
+        format="GIF",
+        save_all=True,
+        append_images=frames[1:],
+        loop=0,
+        duration=200  # Duration per frame in milliseconds
+    )
     buf.seek(0)
+
+    # Encode the GIF buffer to Base64
     base64_image = base64.b64encode(buf.read()).decode('ascii')
     buf.close()
     print("Output File Saved")
