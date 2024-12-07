@@ -100,7 +100,7 @@ def jarvis_main(data):
                 hull_lines.append(line)
                 anim.event_source.stop()  # Stop the animation when the hull is complete
 
-        anim = FuncAnimation(fig, update, frames=len(points), repeat=False)
+        anim = FuncAnimation(fig, update, frames=len(points)+10, repeat=False)
         buf = io.BytesIO()
         frames = []
 
@@ -129,7 +129,7 @@ def jarvis_main(data):
 
 
     # Try reading points from input.txt
-    points = []
+    points = file_to_numpy_array("input.txt")
 
     # If no points are found, generate 10 random points
     if points.size == 0:
