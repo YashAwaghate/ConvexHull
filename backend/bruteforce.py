@@ -104,41 +104,36 @@ class ConvexHullBruteForce:
 
         return scatter, check_line, hull_lines, hull_vertices
 
-def main():
-    # Create the figure and axis for the animation
-    fig, ax = plt.subplots()
-    ax.set_xlim(0, 100)
-    ax.set_ylim(0, 100)
+# Create the figure and axis for the animation
+fig, ax = plt.subplots()
+ax.set_xlim(0, 100)
+ax.set_ylim(0, 100)
 
-    # Scatter plot for all points
-    scatter = ax.scatter([], [], color='blue')
+# Scatter plot for all points
+scatter = ax.scatter([], [], color='blue')
 
-    # Line for checking pairs
-    check_line, = ax.plot([], [], 'g-', lw=1)
+# Line for checking pairs
+check_line, = ax.plot([], [], 'g-', lw=1)
 
-    # Line and points for the hull
-    hull_lines, = ax.plot([], [], 'r-', lw=2)  # Red line for finalized edges
-    hull_vertices, = ax.plot([], [], 'ro')     # Red points for hull vertices
+# Line and points for the hull
+hull_lines, = ax.plot([], [], 'r-', lw=2)  # Red line for finalized edges
+hull_vertices, = ax.plot([], [], 'ro')     # Red points for hull vertices
 
-    # Try reading from input file
-    fixed_points = None
-    if not fixed_points:
-        print("Input file is empty or not found. Generating 10 random points.")
-        fixed_points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(10)]
+# Try reading from input file
+fixed_points = None
+if not fixed_points:
+    print("Input file is empty or not found. Generating 10 random points.")
+    fixed_points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(10)]
 
-    convex_hull = ConvexHullBruteForce(fixed_points)
+convex_hull = ConvexHullBruteForce(fixed_points)
 
-    # Compute the convex hull before animation
-    convex_hull.compute_convex_hull()
+# Compute the convex hull before animation
+convex_hull.compute_convex_hull()
 
-    # Create the animation
-    anim = FuncAnimation(fig, convex_hull.animate, frames=len(convex_hull.intermediate_steps) + len(convex_hull.finalized_edges), interval=500, repeat=False)
-    plt.title("Convex Hull Construction with Brute Force (Fixed or Random Points)")
-    plt.xlabel("X")
-    plt.ylabel("Y")
-    print("here", anim)
-    anim.save("output.gif", writer="pillow")
-    print("Output File Saved")
-
-if __name__ == "__main__":
-    main()
+# Create the animation
+anim = FuncAnimation(fig, convex_hull.animate, frames=len(convex_hull.intermediate_steps) + len(convex_hull.finalized_edges), interval=500, repeat=False)
+plt.title("Convex Hull Construction with Brute Force (Fixed or Random Points)")
+plt.xlabel("X")
+plt.ylabel("Y")
+anim.save("output.gif", writer="pillow")
+print("Output File Saved")

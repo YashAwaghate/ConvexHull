@@ -5,7 +5,7 @@ import os
 import base64
 from io import BytesIO
 from matplotlib.figure import Figure
-from bruteforce import main
+
 app = Flask(__name__)
 CORS(app)  # Allow cross-origin requests
 
@@ -39,10 +39,10 @@ def write_array_to_file(data, filename):
 def run_bruteforce():
     data = request.get_json()
     # write_array_to_file(data, 'input.txt')
-    main()
-    with open('/tmp/output.gif', 'rb') as gif_file:
+    run_script('bruteforce.py')
+    with open('output.gif', 'rb') as gif_file:
         buf = gif_file.read()
-    print("Image Data Read")
+    print("Image Data")
     image_data = base64.b64encode(buf).decode("ascii")    
     return f"data:image/png;base64,{image_data}"
 
