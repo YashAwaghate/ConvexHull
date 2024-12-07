@@ -7,7 +7,7 @@ import base64
 import io
 from PIL import Image
 
-def main():
+def brute_main(data):
     class Point:
         def __init__(self, x: int, y: int):
             self.x = x
@@ -124,30 +124,27 @@ def main():
     plt.title("Convex Hull Construction with Brute Force (Fixed or Random Points)")
     plt.xlabel("X")
     plt.ylabel("Y")
-    # Generate frames as PIL images
+
     buf = io.BytesIO()
     frames = []
 
     for i in range(anim.save_count):
-        anim._draw_frame(i)  # Render the frame
-        fig.canvas.draw()  # Update the canvas
+        anim._draw_frame(i) 
+        fig.canvas.draw() 
         img = Image.frombytes(
             'RGB', fig.canvas.get_width_height(), fig.canvas.tostring_rgb()
         )
         frames.append(img)
 
-    # Save the frames as a GIF to the buffer
     frames[0].save(
         buf,
         format="GIF",
         save_all=True,
         append_images=frames[1:],
         loop=0,
-        duration=200  # Duration per frame in milliseconds
+        duration=200 
     )
     buf.seek(0)
-
-    # Encode the GIF buffer to Base64
     base64_image = base64.b64encode(buf.read()).decode('ascii')
     buf.close()
     print("Output File Saved")

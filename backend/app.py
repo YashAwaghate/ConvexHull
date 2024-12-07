@@ -5,7 +5,8 @@ import os
 import base64
 from io import BytesIO
 from matplotlib.figure import Figure
-from bruteforce import main
+from bruteforce import brute_main
+from divide import divide_main
 
 app = Flask(__name__)
 CORS(app)  # Allow cross-origin requests
@@ -39,35 +40,14 @@ def write_array_to_file(data, filename):
 @app.route('/run-bruteforce', methods=['POST'])
 def run_bruteforce():
     data = request.get_json()
-    # write_array_to_file(data, 'input.txt')
-    # run_script('bruteforce.py') 
-    image_data = main()
+    image_data = brute_main(data)
     return f"data:image/png;base64,{image_data}"
 
-# @app.route('/run-divide', methods=['POST'])
-# def run_divide():
-#     data = request.get_json()
-#     write_array_to_file(data, 'input.txt')
-#     return run_script('divide.py')
+
 @app.route('/run-divide', methods=['POST'])
 def run_divide():
-    # Log raw request data for debugging
-    raw_data = request.get_data(as_text=True)
-    print(f"Raw received data: {raw_data}")  # Log raw input
-
-    try:
-        # Parse the request as JSON
-        json_data = request.get_json()
-        print(f"Parsed JSON data: {json_data}")  # Log parsed JSON
-        write_array_to_file(json_data, 'input.txt')
-    except Exception as e:
-        print(f"Error parsing JSON: {e}")
-        return jsonify({"error": "Invalid input format"}), 400
-
-    run_script('divide.py')
-    with open('output.gif', 'rb') as gif_file:
-        buf = gif_file.read()
-    image_data = base64.b64encode(buf).decode("ascii")
+    data = request.get_data()
+    image_data = divide_main(data)
     return f"data:image/png;base64,{image_data}"
 
 
