@@ -40,11 +40,11 @@ def run_bruteforce():
     data = request.get_json()
     # write_array_to_file(data, 'input.txt')
     run_script('bruteforce.py')
-    with open('/tmp/output.gif', 'rb') as gif_file:
-        buf = gif_file.read()
-    print("Image Data")
-    image_data = base64.b64encode(buf).decode("ascii")    
-    return f"data:image/png;base64,{image_data}"
+    # with open('/tmp/output.gif', 'rb') as gif_file:
+    #     buf = gif_file.read()
+    # print("Image Data")
+    # image_data = base64.b64encode(buf).decode("ascii")    
+    # return f"data:image/png;base64,{image_data}"
 
 # @app.route('/run-divide', methods=['POST'])
 # def run_divide():
