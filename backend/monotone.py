@@ -114,8 +114,7 @@ def monotone_main(data):
         return line,
 
 
-    ani = animation.FuncAnimation(fig, update, frames=len(steps), blit=True,
-                                repeat=False)
+    ani = animation.FuncAnimation(fig, update, frames=len(steps) + 10, interval=500, repeat=False)
 
     plt.title("Convex Hull Construction using Monotone)")
     plt.xlabel("X")
