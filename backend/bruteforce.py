@@ -124,7 +124,7 @@ def main():
     plt.xlabel("X")
     plt.ylabel("Y")
     buf = io.BytesIO()
-    anim.save(buf, format='gif', fps=5)
+    anim.save(buf, fps=5)
     buf.seek(0)
     base64_image = base64.b64encode(buf.read()).decode('ascii')
     buf.close()
