@@ -166,7 +166,8 @@ def divide_main(data):
 
     # Determine points (from file or random)
     num_points = 10  # Number of random points
-    points_from_file = file_to_fixed_points("input.txt")
+    points_from_file = None
+    random_points=None
     if points_from_file:
         random_points = points_from_file
         print(f"Using {len(random_points)} points from input.txt.")

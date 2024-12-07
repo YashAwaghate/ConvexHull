@@ -7,6 +7,9 @@ from io import BytesIO
 from matplotlib.figure import Figure
 from bruteforce import brute_main
 from divide import divide_main
+from Gramham import graham_main
+from jarvis import jarvis_main
+from monotone import monotone_main
 
 app = Flask(__name__)
 CORS(app)  # Allow cross-origin requests
@@ -55,25 +58,20 @@ def run_divide():
 @app.route('/run-gramham', methods=['POST'])
 def run_gramham():
     data = request.get_json()
-    print(data)
-    write_array_to_file(data, 'input.txt')
-    run_script('Gramham.py')
-    with open('output.gif', 'rb') as gif_file:
-        buf = gif_file.read()
-    image_data = base64.b64encode(buf).decode("ascii")
+    image_data = graham_main(data)
     return f"data:image/png;base64,{image_data}"
 
 @app.route('/run-jarvis', methods=['POST'])
 def run_jarvis():
     data = request.get_json()
-    write_array_to_file(data, 'input.txt')
-    return run_script('jarvis.py')
+    image_data = jarvis_main(data)
+    return f"data:image/png;base64,{image_data}"
 
 @app.route('/run-monotone', methods=['POST'])
 def run_monotone():
     data = request.get_json()
-    write_array_to_file(data, 'input.txt')
-    return run_script('monotone.py')
+    image_data = monotone_main(data)
+    return f"data:image/png;base64,{image_data}"
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
