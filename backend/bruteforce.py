@@ -135,5 +135,8 @@ anim = FuncAnimation(fig, convex_hull.animate, frames=len(convex_hull.intermedia
 plt.title("Convex Hull Construction with Brute Force (Fixed or Random Points)")
 plt.xlabel("X")
 plt.ylabel("Y")
-anim.save("output.gif", writer="pillow")
+try:
+    anim.save("/tmp/output.gif", writer='pillow')
+except Exception as e:
+    print(f"Error: {e}")
 print("Output File Saved")
