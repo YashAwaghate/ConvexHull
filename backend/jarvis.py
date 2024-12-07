@@ -137,5 +137,6 @@ def jarvis_main(data):
         points = np.random.rand(10,
                                 2) * 100  # Generate random points in range [0, 100)
 
-    return gift_wrapping_animation(points)
+    gift_wrapping_animation(points)
+    
 
