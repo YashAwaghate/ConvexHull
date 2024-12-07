@@ -137,7 +137,7 @@ def main():
     plt.xlabel("X")
     plt.ylabel("Y")
     print("here", anim)
-    anim.save("/tmp/output.gif", writer="pillow")
+    anim.save("output.gif", writer="pillow")
     print("Output File Saved")
 
 if __name__ == "__main__":
