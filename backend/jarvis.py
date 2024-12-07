@@ -6,7 +6,7 @@ import base64
 import io
 from PIL import Image
 
-def jarvis_main():
+def jarvis_main(data):
     def file_to_numpy_array(filename):
         """Reads points from a file and returns a NumPy array."""
         data = []
