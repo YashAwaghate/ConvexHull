@@ -136,7 +136,7 @@ def main():
     plt.title("Convex Hull Construction with Brute Force (Fixed or Random Points)")
     plt.xlabel("X")
     plt.ylabel("Y")
-    print(anim)
+    print("here", anim)
     anim.save("/tmp/output.gif", writer="pillow")
     print("Output File Saved")
 
