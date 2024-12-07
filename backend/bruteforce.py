@@ -124,7 +124,7 @@ def main():
     plt.xlabel("X")
     plt.ylabel("Y")
     buf = io.BytesIO()
-    plt.savefig(buf, format='png')  # Save the plot as a PNG
+    anim.save(buf, format='gif', fps=5)
     buf.seek(0)
     base64_image = base64.b64encode(buf.read()).decode('ascii')
     buf.close()
