@@ -58,6 +58,7 @@ def run_divide():
 @app.route('/run-gramham', methods=['POST'])
 def run_gramham():
     data = request.get_json()
+    print(data)
     image_data = graham_main(data)
     return f"data:image/png;base64,{image_data}"
 

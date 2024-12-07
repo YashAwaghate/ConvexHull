@@ -1,33 +1,14 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.animation import FuncAnimation
-import os
 import base64
 import io
 from PIL import Image
 
 def jarvis_main(data):
-    def file_to_numpy_array(filename):
-        """Reads points from a file and returns a NumPy array."""
-        data = []
-        try:
-            with open(filename, 'r') as file:
-                for line in file:
-                    values = line.strip().split()
-                    if len(values) == 2:  # Ensure two values per line
-                        data.append(list(map(float, values)))  # Convert to floats
-                    else:
-                        print(
-                            f"Skipping line: {line.strip()} (does not contain exactly two values)")
-        except FileNotFoundError:
-            print(f"{filename} not found.")
-        return np.array(data)
-
-
     def leftmost_point(points):
         """Returns the index of the leftmost point in the list of points."""
         return min(range(len(points)), key=lambda i: points[i][0])
-
 
     def orientation(p, q, r):
         """Returns the orientation of the ordered triplet (p, q, r).
@@ -43,50 +24,39 @@ def jarvis_main(data):
         else:
             return 2
 
-
     def gift_wrapping_animation(points):
-        """Creates an animated visualization of the Gift Wrapping algorithm with retracting failed attempts."""
+        """Creates an animated visualization of the Gift Wrapping algorithm."""
         n = len(points)
         if n < 3:
             print("Convex hull is not possible with less than 3 points.")
             return
 
         fig, ax = plt.subplots()
-        ax.set_title(
-            "Gift Wrapping Algorithm Animation")
+        ax.set_title("Gift Wrapping Algorithm Animation")
+
+        # Dynamic axis limits based on points
+        x_min, x_max = min(p[0] for p in points) - 10, max(p[0] for p in points) + 10
+        y_min, y_max = min(p[1] for p in points) - 10, max(p[1] for p in points) + 10
+        ax.set_xlim(x_min, x_max)
+        ax.set_ylim(y_min, y_max)
+
         plt.scatter(*zip(*points), color='blue')  # Plot all points
 
         hull = []
         hull_lines = []
-        retracting_line = None
-
         l = leftmost_point(points)
         p = l
 
         def update(frame):
-            nonlocal p, retracting_line
-            # Clear the retracting line from the previous step
-            if retracting_line:
-                retracting_line.remove()
-                retracting_line = None
-
+            nonlocal p
             hull.append(points[p])
             q = (p + 1) % n
 
             for i in range(n):
-                # Show the current retracting line
-                if retracting_line:
-                    retracting_line.remove()  # Remove previous retracting line
-                retracting_line, = ax.plot([points[p][0], points[i][0]],
-                                        [points[p][1], points[i][1]],
-                                        'gray', linestyle='--',
-                                        alpha=0.5)  # Draw the new retracting line
-                plt.pause(0.2)  # Pause briefly to show the retracting line
-
                 if orientation(points[p], points[i], points[q]) == 2:
                     q = i
 
-            # Add the successful line to the hull and keep it
+            # Add the successful line to the hull
             line, = ax.plot([points[p][0], points[q][0]],
                             [points[p][1], points[q][1]], 'r-')
             hull_lines.append(line)
@@ -100,16 +70,14 @@ def jarvis_main(data):
                 hull_lines.append(line)
                 anim.event_source.stop()  # Stop the animation when the hull is complete
 
-        anim = FuncAnimation(fig, update, frames=len(points)+10, repeat=False)
+        anim = FuncAnimation(fig, update, frames=n + 10, repeat=False)
         buf = io.BytesIO()
         frames = []
 
-        for i in range(anim.save_count):
-            anim._draw_frame(i) 
-            fig.canvas.draw() 
-            img = Image.frombytes(
-                'RGB', fig.canvas.get_width_height(), fig.canvas.tostring_rgb()
-            )
+        for i in range(n + 10):
+            update(i)
+            fig.canvas.draw()
+            img = Image.frombytes('RGB', fig.canvas.get_width_height(), fig.canvas.tostring_rgb())
             frames.append(img)
 
         frames[0].save(
@@ -118,25 +86,26 @@ def jarvis_main(data):
             save_all=True,
             append_images=frames[1:],
             loop=0,
-            duration=200 
+            duration=200
         )
+
         buf.seek(0)
         base64_image = base64.b64encode(buf.read()).decode('ascii')
         buf.close()
-        print("Output File Saved")
+        print("GIF Created and Encoded to Base64")
         return base64_image
 
+    # Extract points from the data or generate random points if none provided
+    points_from_file = data.get("payload", [])
 
+    if points_from_file == [[0]]:
+        print("Received [[0]]. Generating 20 random points.")
+        points = np.random.randint(0, 100, size=(20, 2))
+    elif points_from_file:
+        points = np.array(points_from_file)
+        print(f"Using {len(points)} points from input data.")
+    else:
+        print("Input data is empty. Generating 10 random points.")
+        points = np.random.randint(0, 100, size=(10, 2))
 
-    # Try reading points from input.txt
-    points = file_to_numpy_array("input.txt")
-
-    # If no points are found, generate 10 random points
-    if points.size == 0:
-        print("Input file is empty or not found. Generating 10 random points.")
-        points = np.random.rand(10,
-                                2) * 100  # Generate random points in range [0, 100)
-
-    gift_wrapping_animation(points)
-    
-
+    return gift_wrapping_animation(points)

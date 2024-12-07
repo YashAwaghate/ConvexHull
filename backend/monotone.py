@@ -10,29 +10,9 @@ def monotone_main(data):
     # Define a simple Point class
     Point = namedtuple('Point', 'x y')
 
-
-    def file_to_fixed_points(filename):
-        """Reads points from a file."""
-        fixed_points = []
-        try:
-            with open(filename, 'r') as file:
-                for line in file:
-                    values = line.strip().split()
-                    if len(values) == 2:
-                        x, y = map(int, values)
-                        fixed_points.append(Point(x, y))
-                    else:
-                        print(
-                            f"Skipping line: {line.strip()} (does not contain exactly two values)")
-        except FileNotFoundError:
-            print(f"{filename} not found.")
-        return fixed_points
-
-
     # Function to find the z component of the cross product of three vectors
     def cross_z(o, a, b):
         return (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x)
-
 
     # The monotone chain algorithm
     def monotone_chain(points):
@@ -65,33 +45,35 @@ def monotone_main(data):
         convex_hull = lower + upper
         return convex_hull, steps
 
-
-    # Function to generate random points
-    def generate_random_points(n, xlim, ylim):
-        """Generates n random points within the given limits."""
-        return [Point(random.randint(0, xlim), random.randint(0, ylim)) for _ in
-                range(n)]
-
-
-    # Try to read points from input.txt
-    points = file_to_fixed_points("input.txt")
-
-    # If no points are found, generate 20 random points
-    if not points:
-        print("Input file is empty or not found. Generating 20 random points.")
-        points = generate_random_points(10, 100, 100)
+    # Check for special case of data payload being [[0]]
+    if data['payload'] == [[0]]:
+        print("Payload is [[0]], generating 20 random points.")
+        points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(20)]
+    else:
+        # Convert the input data into a list of Point objects
+        points = [Point(x, y) for x, y in data['payload']]
 
     # Compute the convex hull and animation steps
     convex_hull, steps = monotone_chain(points)
 
+    # Determine the scale for the plot based on points
+    x_values = [p.x for p in points]
+    y_values = [p.y for p in points]
+    x_min, x_max = min(x_values), max(x_values)
+    y_min, y_max = min(y_values), max(y_values)
+
+    # Adjust plot limits with some padding
+    padding = 10
+    x_min, x_max = x_min - padding, x_max + padding
+    y_min, y_max = y_min - padding, y_max + padding
+
     # Create the animation
     fig, ax = plt.subplots()
-    ax.set_xlim(0, 100)
-    ax.set_ylim(0, 100)
-    scat = ax.scatter([p.x for p in points], [p.y for p in points])
+    ax.set_xlim(x_min, x_max)
+    ax.set_ylim(y_min, y_max)
+    scat = ax.scatter(x_values, y_values)
 
     line, = ax.plot([], [], 'r-')  # Line to draw the hull
-
 
     def update(frame):
         if frame < len(steps):
@@ -113,10 +95,9 @@ def monotone_main(data):
 
         return line,
 
-
     ani = animation.FuncAnimation(fig, update, frames=len(steps) + 10, interval=500, repeat=False)
 
-    plt.title("Convex Hull Construction using Monotone)")
+    plt.title("Convex Hull Construction using Monotone")
     plt.xlabel("X")
     plt.ylabel("Y")
     buf = io.BytesIO()

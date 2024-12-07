@@ -40,7 +40,7 @@ const App = () => {
     setCurrentAlgorithm(algorithmName);
     console.log(payload)
     try {
-      const response = await axios.post(`https://convex-hull-backend.vercel.app/run-${algorithmName}`, {
+      const response = await axios.post(`http://127.0.0.1:5001/run-${algorithmName}`, {
         payload
       });
       console.log(response)

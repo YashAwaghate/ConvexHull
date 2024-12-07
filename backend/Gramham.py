@@ -9,41 +9,33 @@ import base64
 import io
 from PIL import Image
 
+# Define the Graham Scan Convex Hull Algorithm
 def graham_main(data):
-    # Define a simple Point class
     Point = namedtuple('Point', 'x y')
 
-    # Function to find the orientation of the triplet (p, q, r)
     def orientation(p, q, r):
         val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)
         if val == 0:
             return 0  # Collinear
         return 1 if val > 0 else 2  # Clockwise or Counterclockwise
 
-    # A utility function to return square of distance between p1 and p2
     def dist_sq(p1, p2):
         return (p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2
 
-    # A utility function to find next to top in a stack
     def next_to_top(S):
         return S[-2]
 
-    # A function used by cmp_to_key function to sort an array of points with respect to the first point
     def compare(p1, p2):
         o = orientation(p0, p1, p2)
         if o == 0:
             return -1 if dist_sq(p0, p2) >= dist_sq(p0, p1) else 1
         return -1 if o == 2 else 1
 
-    # Convex Hull using Graham Scan
-    p0 = Point(0, 0)
-
     def convex_hull(points):
         n = len(points)
         if n < 3:
             return []
 
-        # Find the bottom-most point
         ymin = points[0].y
         min_idx = 0
         for i in range(1, n):
@@ -52,98 +44,95 @@ def graham_main(data):
                 ymin = points[i].y
                 min_idx = i
 
-        # Place the bottom-most point at first position
         points[0], points[min_idx] = points[min_idx], points[0]
         global p0
         p0 = points[0]
 
-        # Sort n-1 points with respect to the first point
         points = sorted(points, key=cmp_to_key(compare))
 
-        # Initialize the stack with the first two points after sorting
         S = [points[0], points[1]]
-        steps = [(S.copy(), False)]  # Record the initial two points as the first step with tentative status
+        steps = [(S.copy(), False)]
 
-        # Process remaining points
         for i in range(2, len(points)):
             while len(S) > 1 and orientation(next_to_top(S), S[-1], points[i]) != 2:
                 S.pop()
             S.append(points[i])
-            steps.append((S.copy(), True if i == len(points) - 1 else False))  # Mark as finalized only for last step
+            steps.append((S.copy(), True if i == len(points) - 1 else False))
 
         return S, steps
 
-    # Check if input.txt is empty or not
-    num_points = 10  # Number of random points
-    points_from_file = None
-    random_points=None
-    if points_from_file:
-        random_points = points_from_file
-        print(f"Using {len(random_points)} points from input.txt.")
-    else:
-        print("Input file is empty or not found. Generating random points.")
-        random_points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(num_points)]
+    points_from_file = data.get("payload", [])
 
-    # Compute the convex hull and steps for visualization
+    random_points = None
+    if points_from_file == [[0]]:
+        print("Received [[0]]. Generating 20 random points.")
+        random_points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(20)]
+    elif points_from_file:
+        random_points = [Point(x, y) for x, y in points_from_file]
+        print(f"Using {len(random_points)} points from input data.")
+    else:
+        print("Input data is empty. Generating 10 random points.")
+        random_points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(10)]
+
+    # Determine dynamic scale for plotting
+    min_x = min(p.x for p in random_points)
+    max_x = max(p.x for p in random_points)
+    min_y = min(p.y for p in random_points)
+    max_y = max(p.y for p in random_points)
+
+    padding = 10  # Add some padding around the points for better visualization
+    x_min, x_max = min_x - padding, max_x + padding
+    y_min, y_max = min_y - padding, max_y + padding
+
     hull, steps = convex_hull(random_points)
 
-    # Visualization setup
     fig, ax = plt.subplots()
-    ax.set_xlim(0, 100)
-    ax.set_ylim(0, 100)
+    ax.set_xlim(x_min, x_max)
+    ax.set_ylim(y_min, y_max)
     scatter = ax.scatter([], [], color='blue')
-    tentative_line, = ax.plot([], [], 'grey', lw=2)  # Grey line for tentative edges
-    finalized_line, = ax.plot([], [], 'r-', lw=2)    # Red line for finalized hull edges
-    start_marker, = ax.plot([], [], 'yo')             # Yellow marker for the start point
-    point_marker, = ax.plot([], [], 'go')             # Green marker for the current point being processed
+    tentative_line, = ax.plot([], [], 'grey', lw=2)
+    finalized_line, = ax.plot([], [], 'r-', lw=2)
+    start_marker, = ax.plot([], [], 'yo')
+    point_marker, = ax.plot([], [], 'go')
 
     def animate(frame):
-        # Display all points
         scatter.set_offsets([(p.x, p.y) for p in random_points])
-
-        # Highlight the starting point
         start_marker.set_data(p0.x, p0.y)
 
-        # Retrieve current hull and finalization status
         if frame < len(steps):
             current_hull, finalized = steps[frame]
             hull_xs = [p.x for p in current_hull]
             hull_ys = [p.y for p in current_hull]
 
-            # Display tentative line in grey if not finalized, otherwise red
             if finalized:
-                finalized_line.set_data(hull_xs + [hull_xs[0]], hull_ys + [hull_ys[0]])  # Close the hull loop in red
-                tentative_line.set_data([], [])  # Clear the grey line when finalizing
+                finalized_line.set_data(hull_xs + [hull_xs[0]], hull_ys + [hull_ys[0]])
+                tentative_line.set_data([], [])
             else:
-                tentative_line.set_data(hull_xs, hull_ys)  # Show grey line for tentative edges
-                finalized_line.set_data([], [])  # Clear the red line during tentative phase
+                tentative_line.set_data(hull_xs, hull_ys)
+                finalized_line.set_data([], [])
 
-            # Highlight the current point being processed
             point_marker.set_data(current_hull[-1].x, current_hull[-1].y)
         else:
-            # Final display of the full hull
             hull_xs = [p.x for p in hull]
             hull_ys = [p.y for p in hull]
             finalized_line.set_data(hull_xs + [hull_xs[0]], hull_ys + [hull_ys[0]])
-            tentative_line.set_data([], [])  # Ensure no grey line remains
-            point_marker.set_data([], [])  # Clear the point marker
+            tentative_line.set_data([], [])
+            point_marker.set_data([], [])
 
         return scatter, tentative_line, finalized_line, start_marker, point_marker
 
-    # Create the animation
     anim = FuncAnimation(fig, animate, frames=len(steps) + 10, interval=500, repeat=False)
     plt.title("Convex Hull Construction with Graham Scan")
     plt.xlabel("X")
     plt.ylabel("Y")
+
     buf = io.BytesIO()
     frames = []
 
-    for i in range(anim.save_count):
-        anim._draw_frame(i) 
-        fig.canvas.draw() 
-        img = Image.frombytes(
-            'RGB', fig.canvas.get_width_height(), fig.canvas.tostring_rgb()
-        )
+    for i in range(len(steps) + 10):
+        animate(i)
+        fig.canvas.draw()
+        img = Image.frombytes('RGB', fig.canvas.get_width_height(), fig.canvas.tostring_rgb())
         frames.append(img)
 
     frames[0].save(
@@ -152,10 +141,11 @@ def graham_main(data):
         save_all=True,
         append_images=frames[1:],
         loop=0,
-        duration=200 
+        duration=200
     )
+
     buf.seek(0)
     base64_image = base64.b64encode(buf.read()).decode('ascii')
     buf.close()
-    print("Output File Saved")
+    print("GIF Created and Encoded to Base64")
     return base64_image
