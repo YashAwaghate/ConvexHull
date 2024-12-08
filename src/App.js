@@ -12,25 +12,13 @@ const ReportSection = ({ title, content }) => {
   );
 };
 
-const AlgorithmSection = ({ title, description, pseudocode, runAlgorithm, isLoading, currentAlgorithm, setPayload, numPoints, setNumPoints }) => {
+const AlgorithmSection = ({ title, description, pseudocode, runAlgorithm, isLoading, currentAlgorithm }) => {
   return (
     <div className="algorithm-section">
       <h3>{title}</h3>
       <p>{description}</p>
       <h4>Pseudocode:</h4>
       <pre className="pseudocode">{pseudocode}</pre>
-      <div>
-        <label htmlFor="numPoints">Number of Random Points: </label>
-        <input
-          type="number"
-          id="numPoints"
-          value={numPoints}
-          onChange={(e) => setNumPoints(e.target.value)}
-          min="1"
-          style={{ marginBottom: '10px', width: '100px', marginLeft: '10px' }}
-        />
-      </div>
-      <UserInput setPayload={setPayload} />
       <button onClick={runAlgorithm} disabled={isLoading} style={{ marginTop: '10px' }}>
         {isLoading && currentAlgorithm === title.toLowerCase().replace(' ', '') ? `Running ${title}...` : `Run ${title}`}
       </button>
@@ -121,9 +109,6 @@ for each pair of points (p1, p2):
                   runAlgorithm={() => runAlgorithm('bruteforce')}
                   isLoading={isLoading}
                   currentAlgorithm={currentAlgorithm}
-                  setPayload={setPayload}
-                  numPoints={numPoints}
-                  setNumPoints={setNumPoints}
                 />
 
                 <AlgorithmSection
@@ -137,9 +122,6 @@ merge the two convex hulls to get the final result
                   runAlgorithm={() => runAlgorithm('divide')}
                   isLoading={isLoading}
                   currentAlgorithm={currentAlgorithm}
-                  setPayload={setPayload}
-                  numPoints={numPoints}
-                  setNumPoints={setNumPoints}
                 />
 
                 <AlgorithmSection
@@ -155,9 +137,6 @@ for each point:
                   runAlgorithm={() => runAlgorithm('gramham')}
                   isLoading={isLoading}
                   currentAlgorithm={currentAlgorithm}
-                  setPayload={setPayload}
-                  numPoints={numPoints}
-                  setNumPoints={setNumPoints}
                 />
 
                 <AlgorithmSection
@@ -172,9 +151,6 @@ repeat until you return to the starting point:
                   runAlgorithm={() => runAlgorithm('jarvis')}
                   isLoading={isLoading}
                   currentAlgorithm={currentAlgorithm}
-                  setPayload={setPayload}
-                  numPoints={numPoints}
-                  setNumPoints={setNumPoints}
                 />
 
                 <AlgorithmSection
@@ -189,9 +165,6 @@ combine the lower and upper hulls
                   runAlgorithm={() => runAlgorithm('monotone')}
                   isLoading={isLoading}
                   currentAlgorithm={currentAlgorithm}
-                  setPayload={setPayload}
-                  numPoints={numPoints}
-                  setNumPoints={setNumPoints}
                 />
               </>
             }
@@ -334,7 +307,19 @@ combine the lower and upper hulls
           }}
         >
           <h2>Output</h2>
-          {!algorithmOutput && <p>Run an algorithm to see the output here...</p>}
+          <UserInput setPayload={setPayload} />
+          <div style={{ marginBottom: '20px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            <label htmlFor="numPoints" style={{ marginBottom: '5px' }}>Number of Random Points:</label>
+            <input
+              type="number"
+              id="numPoints"
+              value={numPoints}
+              onChange={(e) => setNumPoints(e.target.value)}
+              min="1"
+              style={{ width: '60px' }}
+            />
+          </div>
+          {!algorithmOutput && <p style={{ marginTop: '20px' }}>Run an algorithm to see the output here...</p>}
           {algorithmOutput && (
             <ReportSection
               title={`${currentAlgorithm.charAt(0).toUpperCase() + currentAlgorithm.slice(1)} Algorithm Output`}
