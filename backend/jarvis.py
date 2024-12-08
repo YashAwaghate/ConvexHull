@@ -43,32 +43,38 @@ def jarvis_main(data):
         plt.scatter(*zip(*points), color='blue')  # Plot all points
 
         hull = []
-        hull_lines = []
+        tentative_lines = []
+        finalized_lines = []
         l = leftmost_point(points)
         p = l
 
         def update(frame):
             nonlocal p
+            if p == l and len(hull) > 1:  # Stop when the hull is complete
+                ax.plot([hull[-1][0], hull[0][0]], [hull[-1][1], hull[0][1]], 'r-', lw=2)  # Close the hull
+                anim.event_source.stop()
+                return
+
             hull.append(points[p])
             q = (p + 1) % n
+
+            # Draw tentative lines
+            for line in tentative_lines:
+                line.remove()
+            tentative_lines.clear()
 
             for i in range(n):
                 if orientation(points[p], points[i], points[q]) == 2:
                     q = i
+                # line, = ax.plot([points[p][0], points[i][0]], [points[p][1], points[i][1]],
+                #                 'grey', linestyle='--', lw=1)
+                # tentative_lines.append(line)
 
-            # Add the successful line to the hull
-            line, = ax.plot([points[p][0], points[q][0]],
-                            [points[p][1], points[q][1]], 'r-')
-            hull_lines.append(line)
+            # Finalize the selected edge
+            line, = ax.plot([points[p][0], points[q][0]], [points[p][1], points[q][1]], 'r-', lw=2)
+            finalized_lines.append(line)
 
             p = q
-
-            # Close the hull if we are back to the start
-            if p == l:
-                line, = ax.plot([hull[-1][0], hull[0][0]],
-                                [hull[-1][1], hull[0][1]], 'r-')
-                hull_lines.append(line)
-                anim.event_source.stop()  # Stop the animation when the hull is complete
 
         anim = FuncAnimation(fig, update, frames=n + 10, repeat=False)
         buf = io.BytesIO()

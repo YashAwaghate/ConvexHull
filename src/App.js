@@ -34,10 +34,11 @@ const App = () => {
   const [numPoints, setNumPoints] = useState(10); // Number of points to generate
 
   const runAlgorithm = async (algorithmName) => {
-    setIsLoading(true);
+    setIsLoading(true)
+    setAlgorithmOutput(false);
     setCurrentAlgorithm(algorithmName);
     try {
-      const response = await axios.post(`http://127.0.0.1:5001/run-${algorithmName}`, {
+      const response = await axios.post(`https://convex-hull-backend.vercel.app/run-${algorithmName}`, {
         payload,
         numPoints,
       });
@@ -134,7 +135,7 @@ for each point:
   while the top of the stack is not a left turn, pop it
   push the current point onto the stack
                   `}
-                  runAlgorithm={() => runAlgorithm('gramham')}
+                  runAlgorithm={() => runAlgorithm('graham')}
                   isLoading={isLoading}
                   currentAlgorithm={currentAlgorithm}
                 />
@@ -320,7 +321,7 @@ combine the lower and upper hulls
             />
           </div>
           {!algorithmOutput && <p style={{ marginTop: '20px' }}>Run an algorithm to see the output here...</p>}
-          {algorithmOutput && (
+          {algorithmOutput&&(
             <ReportSection
               title={`${currentAlgorithm.charAt(0).toUpperCase() + currentAlgorithm.slice(1)} Algorithm Output`}
               content={

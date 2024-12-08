@@ -2,7 +2,7 @@
   "name": "convexhull",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://YashAwaghate.github.io/ConvexHull",
+  "homepage": "/",
   "dependencies": {
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
