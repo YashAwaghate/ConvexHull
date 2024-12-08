@@ -92,7 +92,7 @@ def graham_main(data):
     ax.set_xlim(x_min, x_max)
     ax.set_ylim(y_min, y_max)
     scatter = ax.scatter([], [], color='blue')
-    tentative_line, = ax.plot([], [], 'grey', lw=2)
+    tentative_line, = ax.plot([], [], 'grey',  linestyle='--',lw=2)
     finalized_line, = ax.plot([], [], 'r-', lw=2)
     start_marker, = ax.plot([], [], 'yo')
     point_marker, = ax.plot([], [], 'go')

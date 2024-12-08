@@ -69,18 +69,22 @@ def brute_main(data):
             # Show all points as a scatter plot
             scatter.set_offsets([(p.x, p.y) for p in self.points])
 
-            # Grey dotted line for intermediate steps
+            # Show intermediate line checking
             if frame < len(self.intermediate_steps):
                 p1, p2 = self.intermediate_steps[frame]
                 check_line.set_data([p1.x, p2.x], [p1.y, p2.y])
-                check_line.set_linestyle('--')  # Dotted line
-                check_line.set_color('grey')  # Grey color
             else:
-                # Clear the grey dotted line after intermediate steps are completed
+                # Clear the green checking line after intermediate steps are completed
                 check_line.set_data([], [])
 
-            # Finalized red hull: Draw once after all intermediate steps are done
-            if frame == 0:  # Set up the final hull on the first frame
+            # Display each finalized edge in red progressively
+            if frame < len(self.finalized_edges):
+                edge = self.finalized_edges[:frame + 1]
+                hull_xs = [point.x for p1, p2 in edge for point in [p1, p2]]
+                hull_ys = [point.y for p1, p2 in edge for point in [p1, p2]]
+                hull_lines.set_data(hull_xs, hull_ys)
+            elif frame >= len(self.intermediate_steps):
+                # Close the hull loop after all intermediate steps are done
                 self.sort_hull_counterclockwise()
                 hull_xs = [p.x for p in self.hull] + [self.hull[0].x]
                 hull_ys = [p.y for p in self.hull] + [self.hull[0].y]
@@ -153,7 +157,7 @@ def brute_main(data):
         save_all=True,
         append_images=frames[1:],
         loop=0,
-        duration=200 
+        duration=200
     )
     buf.seek(0)
     base64_image = base64.b64encode(buf.read()).decode('ascii')

@@ -134,7 +134,7 @@ for each point:
   while the top of the stack is not a left turn, pop it
   push the current point onto the stack
                   `}
-                  runAlgorithm={() => runAlgorithm('gramham')}
+                  runAlgorithm={() => runAlgorithm('graham')}
                   isLoading={isLoading}
                   currentAlgorithm={currentAlgorithm}
                 />

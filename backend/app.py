@@ -8,7 +8,7 @@ from io import BytesIO
 from matplotlib.figure import Figure
 from bruteforce import brute_main
 from divide import divide_main
-from Gramham import graham_main
+from Graham import graham_main
 from jarvis import jarvis_main
 from monotone import monotone_main
 matplotlib.use('Agg')  # Added by Yash A -- My app crashing without this.
@@ -57,7 +57,7 @@ def run_divide():
 
 
 
-@app.route('/run-gramham', methods=['POST'])
+@app.route('/run-graham', methods=['POST'])
 def run_gramham():
     data = request.get_json()
     print(data)
