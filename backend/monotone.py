@@ -8,6 +8,7 @@ from PIL import Image
 
 def monotone_main(data):
     # Define a simple Point class
+    print(data)
     Point = namedtuple('Point', 'x y')
 
     # Function to find the z component of the cross product of three vectors
@@ -38,20 +39,24 @@ def monotone_main(data):
                 lower + upper[::-1])  # Track the combined steps for animation
 
         # Remove the last point of each half to avoid duplication in the final hull
-        lower.pop()
-        upper.pop()
+        if lower:
+            lower.pop()
+        if upper:
+            upper.pop()
 
         # Combine lower and upper hulls to form the final convex hull
         convex_hull = lower + upper
         return convex_hull, steps
 
     # Check for special case of data payload being [[0]]
-    if data['payload'] == [[0]]:
-        print("Payload is [[0]], generating 20 random points.")
+    if data['payload'] == [[0]] or data['payload'] == []:
         points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(20)]
     else:
         # Convert the input data into a list of Point objects
         points = [Point(x, y) for x, y in data['payload']]
+
+    if not points:
+        raise ValueError("No points available to process.")
 
     # Compute the convex hull and animation steps
     convex_hull, steps = monotone_chain(points)
@@ -104,8 +109,8 @@ def monotone_main(data):
     frames = []
 
     for i in range(ani.save_count):
-        ani._draw_frame(i) 
-        fig.canvas.draw() 
+        ani._draw_frame(i)
+        fig.canvas.draw()
         img = Image.frombytes(
             'RGB', fig.canvas.get_width_height(), fig.canvas.tostring_rgb()
         )
@@ -117,7 +122,7 @@ def monotone_main(data):
         save_all=True,
         append_images=frames[1:],
         loop=0,
-        duration=200 
+        duration=200
     )
     buf.seek(0)
     base64_image = base64.b64encode(buf.read()).decode('ascii')
