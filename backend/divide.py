@@ -238,22 +238,22 @@ def divide_main(data):
     plt.xlabel("X")
     plt.ylabel("Y")
     buf = io.BytesIO()
-    frames = []
+    ff = []
 
     for i in range(ani.save_count):
-        ani._draw_frame(i) 
+        ani._draw_frame(i)
         fig.canvas.draw()  
         img = Image.frombytes(
             'RGB', fig.canvas.get_width_height(), fig.canvas.tostring_rgb()
         )
-        frames.append(img)
+        ff.append(img)
 
    
-    frames[0].save(
+    ff[0].save(
         buf,
         format="GIF",
         save_all=True,
-        append_images=frames[1:],
+        append_images=ff[1:],
         loop=0,
         duration=200  
     )
