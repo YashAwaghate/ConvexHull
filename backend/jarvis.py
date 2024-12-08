@@ -97,15 +97,16 @@ def jarvis_main(data):
 
     # Extract points from the data or generate random points if none provided
     points_from_file = data.get("payload", [])
+    num_points = int(data.get("numPoints", 10))  # Default to 10 random points if not provided
 
     if points_from_file == [[0]]:
-        print("Received [[0]]. Generating 20 random points.")
-        points = np.random.randint(0, 100, size=(20, 2))
+        print(f"Received [[0]]. Generating {num_points} random points.")
+        points = np.random.randint(0, 100, size=(num_points, 2))
     elif points_from_file:
         points = np.array(points_from_file)
         print(f"Using {len(points)} points from input data.")
     else:
-        print("Input data is empty. Generating 10 random points.")
-        points = np.random.randint(0, 100, size=(10, 2))
+        print(f"Input data is empty. Generating {num_points} random points.")
+        points = np.random.randint(0, 100, size=(num_points, 2))
 
     return gift_wrapping_animation(points)

@@ -61,18 +61,20 @@ def graham_main(data):
 
         return S, steps
 
+    # Extract points from the data or generate random points if none provided
     points_from_file = data.get("payload", [])
+    num_points = int(data.get("numPoints", 10))  # Default to 10 random points if not provided
 
     random_points = None
     if points_from_file == [[0]]:
-        print("Received [[0]]. Generating 20 random points.")
-        random_points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(20)]
+        print(f"Received [[0]]. Generating {num_points} random points.")
+        random_points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(num_points)]
     elif points_from_file:
         random_points = [Point(x, y) for x, y in points_from_file]
         print(f"Using {len(random_points)} points from input data.")
     else:
-        print("Input data is empty. Generating 10 random points.")
-        random_points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(10)]
+        print(f"Input data is empty. Generating {num_points} random points.")
+        random_points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(num_points)]
 
     # Determine dynamic scale for plotting
     min_x = min(p.x for p in random_points)

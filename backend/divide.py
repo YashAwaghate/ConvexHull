@@ -129,19 +129,21 @@ def divide_main(data):
         frames.append((list(left_hull), list(right_hull), []))
         return merger(left_hull, right_hull, frames)
 
-    # Handle input similarly to jarvis_main
+    # Extract points or generate random points
     points_from_file = data.get("payload", [])
+    num_points = int(data.get("numPoints", 10))  # Default to 10 if not provided
+
     if points_from_file == [[0]]:
-        print("Received [[0]]. Generating 20 random points.")
-        random_data = np.random.randint(0, 100, size=(20, 2))
+        print(f"Received [[0]]. Generating {num_points} random points.")
+        random_data = np.random.randint(0, 100, size=(num_points, 2))
         random_points = [Point(x, y) for x, y in random_data]
     elif points_from_file:
         points_array = np.array(points_from_file)
         random_points = [Point(x, y) for x, y in points_array]
         print(f"Using {len(random_points)} points from input data.")
     else:
-        print("Input data is empty. Generating 10 random points.")
-        random_data = np.random.randint(0, 100, size=(10, 2))
+        print(f"Input data is empty. Generating {num_points} random points.")
+        random_data = np.random.randint(0, 100, size=(num_points, 2))
         random_points = [Point(x, y) for x, y in random_data]
 
     random_points.sort(key=lambda p: (p.x, p.y))
@@ -171,11 +173,8 @@ def divide_main(data):
             ax.plot([p.x for p in merged_hull + [merged_hull[0]]],
                     [p.y for p in merged_hull + [merged_hull[0]]], 'r-', linewidth=2)
 
-    # Create animation object
-    # Note: We won't use anim.save(), just using it to structure frames.
     anim = FuncAnimation(fig, animate, frames=len(frames), interval=1000, repeat=False)
 
-    # Manually generate frames (as requested)
     buf = io.BytesIO()
     img_frames = []
     for i in range(len(frames)):
@@ -190,7 +189,7 @@ def divide_main(data):
         save_all=True,
         append_images=img_frames[1:],
         loop=0,
-        duration=1000  # Frame duration in milliseconds
+        duration=1000
     )
 
     buf.seek(0)

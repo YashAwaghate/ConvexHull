@@ -93,6 +93,20 @@ def brute_main(data):
 
             return scatter, check_line, hull_lines, hull_vertices
 
+    # Extract points or generate random points
+    points_from_file = data.get("payload", [])
+    num_points = int(data.get("numPoints", 10))  # Default to 10 random points if not provided
+
+    if points_from_file == [[0]]:
+        print(f"Received [[0]]. Generating {num_points} random points.")
+        fixed_points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(num_points)]
+    elif points_from_file:
+        fixed_points = [Point(x, y) for x, y in points_from_file]
+        print(f"Using {len(fixed_points)} points from input data.")
+    else:
+        print(f"Input data is empty. Generating {num_points} random points.")
+        fixed_points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(num_points)]
+
     # Create the figure and axis for the animation
     fig, ax = plt.subplots()
     ax.set_xlim(0, 100)
@@ -107,12 +121,6 @@ def brute_main(data):
     # Line and points for the hull
     hull_lines, = ax.plot([], [], 'r-', lw=2)  # Red line for finalized edges
     hull_vertices, = ax.plot([], [], 'ro')     # Red points for hull vertices
-
-    # Try reading from input file
-    fixed_points = None
-    if not fixed_points:
-        print("Input file is empty or not found. Generating 10 random points.")
-        fixed_points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(10)]
 
     convex_hull = ConvexHullBruteForce(fixed_points)
 
@@ -129,8 +137,8 @@ def brute_main(data):
     frames = []
 
     for i in range(anim.save_count):
-        anim._draw_frame(i) 
-        fig.canvas.draw() 
+        anim._draw_frame(i)
+        fig.canvas.draw()
         img = Image.frombytes(
             'RGB', fig.canvas.get_width_height(), fig.canvas.tostring_rgb()
         )

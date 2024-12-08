@@ -12,15 +12,26 @@ const ReportSection = ({ title, content }) => {
   );
 };
 
-const AlgorithmSection = ({ title, description, pseudocode, runAlgorithm, isLoading, currentAlgorithm, setPayload }) => {
+const AlgorithmSection = ({ title, description, pseudocode, runAlgorithm, isLoading, currentAlgorithm, setPayload, numPoints, setNumPoints }) => {
   return (
     <div className="algorithm-section">
       <h3>{title}</h3>
       <p>{description}</p>
       <h4>Pseudocode:</h4>
       <pre className="pseudocode">{pseudocode}</pre>
+      <div>
+        <label htmlFor="numPoints">Number of Random Points: </label>
+        <input
+          type="number"
+          id="numPoints"
+          value={numPoints}
+          onChange={(e) => setNumPoints(e.target.value)}
+          min="1"
+          style={{ marginBottom: '10px', width: '100px', marginLeft: '10px' }}
+        />
+      </div>
       <UserInput setPayload={setPayload} />
-      <button onClick={runAlgorithm} disabled={isLoading}>
+      <button onClick={runAlgorithm} disabled={isLoading} style={{ marginTop: '10px' }}>
         {isLoading && currentAlgorithm === title.toLowerCase().replace(' ', '') ? `Running ${title}...` : `Run ${title}`}
       </button>
     </div>
@@ -32,6 +43,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false); // State to show a loading indicator
   const [currentAlgorithm, setCurrentAlgorithm] = useState(''); // To track which algorithm is running
   const [payload, setPayload] = useState([]);
+  const [numPoints, setNumPoints] = useState(10); // Number of points to generate
 
   const runAlgorithm = async (algorithmName) => {
     setIsLoading(true);
@@ -39,6 +51,7 @@ const App = () => {
     try {
       const response = await axios.post(`http://127.0.0.1:5001/run-${algorithmName}`, {
         payload,
+        numPoints,
       });
       setAlgorithmOutput(response.data);
     } catch (error) {
@@ -109,6 +122,8 @@ for each pair of points (p1, p2):
                   isLoading={isLoading}
                   currentAlgorithm={currentAlgorithm}
                   setPayload={setPayload}
+                  numPoints={numPoints}
+                  setNumPoints={setNumPoints}
                 />
 
                 <AlgorithmSection
@@ -123,6 +138,8 @@ merge the two convex hulls to get the final result
                   isLoading={isLoading}
                   currentAlgorithm={currentAlgorithm}
                   setPayload={setPayload}
+                  numPoints={numPoints}
+                  setNumPoints={setNumPoints}
                 />
 
                 <AlgorithmSection
@@ -139,6 +156,8 @@ for each point:
                   isLoading={isLoading}
                   currentAlgorithm={currentAlgorithm}
                   setPayload={setPayload}
+                  numPoints={numPoints}
+                  setNumPoints={setNumPoints}
                 />
 
                 <AlgorithmSection
@@ -154,6 +173,8 @@ repeat until you return to the starting point:
                   isLoading={isLoading}
                   currentAlgorithm={currentAlgorithm}
                   setPayload={setPayload}
+                  numPoints={numPoints}
+                  setNumPoints={setNumPoints}
                 />
 
                 <AlgorithmSection
@@ -169,6 +190,8 @@ combine the lower and upper hulls
                   isLoading={isLoading}
                   currentAlgorithm={currentAlgorithm}
                   setPayload={setPayload}
+                  numPoints={numPoints}
+                  setNumPoints={setNumPoints}
                 />
               </>
             }
