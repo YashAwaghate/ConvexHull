@@ -7,34 +7,19 @@ import random
 import base64
 import io
 from PIL import Image
+import json
 
 def divide_main(data):
-    # Define a simple Point class
-    Point = namedtuple('Point', 'x y')
+    # Decode 'data' if it's a bytes object
+    if isinstance(data, bytes):
+        try:
+            data = json.loads(data.decode('utf-8'))
+        except json.JSONDecodeError:
+            data = {}
 
-    # Global variable to store the center of the polygon
+    Point = namedtuple('Point', 'x y')
     mid = Point(0, 0)
 
-    # Read points from a file
-    def file_to_fixed_points(filename):
-        fixed_points = []
-        try:
-            with open(filename, 'r') as file:
-                for line in file:
-                    values = line.strip().split()
-                    if len(values) == 2:
-                        try:
-                            x, y = map(int, values)
-                            fixed_points.append(Point(x, y))
-                        except ValueError:
-                            print(f"Skipping line: {line.strip()} (contains non-integer values)")
-                    else:
-                        print(f"Skipping line: {line.strip()} (does not contain exactly two values)")
-        except FileNotFoundError:
-            print(f"File {filename} not found.")
-        return fixed_points
-
-    # Determines the quadrant of the point (used in compare())
     def quad(p):
         if p.x >= 0 and p.y >= 0:
             return 1
@@ -44,14 +29,12 @@ def divide_main(data):
             return 3
         return 4
 
-    # Function to find the orientation of the triplet (a, b, c)
     def orientation(a, b, c):
         res = (b.y - a.y) * (c.x - b.x) - (c.y - b.y) * (b.x - a.x)
         if res == 0:
-            return 0  # Collinear
-        return 1 if res > 0 else -1  # Clockwise or Counterclockwise
+            return 0
+        return 1 if res > 0 else -1
 
-    # A function used by cmp_to_key function to sort an array of points with respect to the center point 'mid'
     def compare(p1, q1):
         p = Point(p1.x - mid.x, p1.y - mid.y)
         q = Point(q1.x - mid.x, q1.y - mid.y)
@@ -63,65 +46,8 @@ def divide_main(data):
             return -1
         return 1
 
-    # Function to merge two convex hulls
-    def merger(a, b, frames):
-        n1, n2 = len(a), len(b)
-        ia, ib = 0, 0
-
-        # ia -> rightmost point of a
-        for i in range(1, n1):
-            if a[i].x > a[ia].x:
-                ia = i
-
-        # ib -> leftmost point of b
-        for i in range(1, n2):
-            if b[i].x < b[ib].x:
-                ib = i
-
-        # Finding the upper tangent
-        inda, indb = ia, ib
-        done = False
-        while not done:
-            done = True
-            while orientation(b[indb], a[inda], a[(inda + 1) % n1]) >= 0:
-                inda = (inda + 1) % n1
-            while orientation(a[inda], b[indb], b[(n2 + indb - 1) % n2]) <= 0:
-                indb = (indb - 1 + n2) % n2
-                done = False
-        uppera, upperb = inda, indb
-
-        # Finding the lower tangent
-        inda, indb = ia, ib
-        done = False
-        while not done:
-            done = True
-            while orientation(a[inda], b[indb], b[(indb + 1) % n2]) >= 0:
-                indb = (indb + 1) % n2
-            while orientation(b[indb], a[inda], a[(n1 + inda - 1) % n1]) <= 0:
-                inda = (inda - 1 + n1) % n1
-                done = False
-        lowera, lowerb = inda, indb
-
-        # Construct the merged hull
-        ret = []
-        ind = uppera
-        ret.append(a[uppera])
-        while ind != lowera:
-            ind = (ind + 1) % n1
-            ret.append(a[ind])
-        ind = lowerb
-        ret.append(b[lowerb])
-        while ind != upperb:
-            ind = (ind + 1) % n2
-            ret.append(b[ind])
-
-        # Add the merged hull to frames for visualization
-        frames.append((list(a), list(b), list(ret)))
-        return ret
-
-    # Brute force algorithm to find convex hull for a set of less than 6 points
     def brute_hull(points):
-        global mid
+        nonlocal mid
         s = set()
         for i in range(len(points)):
             for j in range(i + 1, len(points)):
@@ -138,128 +64,129 @@ def divide_main(data):
                     s.add(points[i])
                     s.add(points[j])
         ret = list(s)
-
-        # Sorting the points in anti-clockwise order
-        mid = Point(sum(p.x for p in ret) / len(ret), sum(p.y for p in ret) / len(ret))
-        ret = sorted(ret, key=cmp_to_key(compare))
+        if ret:
+            mid = Point(sum(p.x for p in ret) / len(ret), sum(p.y for p in ret) / len(ret))
+            ret = sorted(ret, key=cmp_to_key(compare))
         return ret
 
-    # Recursive function to find the convex hull using divide and conquer
+    def merger(a, b, frames):
+        n1, n2 = len(a), len(b)
+        ia, ib = 0, 0
+        for i in range(1, n1):
+            if a[i].x > a[ia].x:
+                ia = i
+        for i in range(1, n2):
+            if b[i].x < b[ib].x:
+                ib = i
+        inda, indb = ia, ib
+        done = False
+        while not done:
+            done = True
+            while orientation(b[indb], a[inda], a[(inda + 1) % n1]) >= 0:
+                inda = (inda + 1) % n1
+            while orientation(a[inda], b[indb], b[(n2 + indb - 1) % n2]) <= 0:
+                indb = (indb - 1 + n2) % n2
+                done = False
+        uppera, upperb = inda, indb
+
+        inda, indb = ia, ib
+        done = False
+        while not done:
+            done = True
+            while orientation(a[inda], b[indb], b[(indb + 1) % n2]) >= 0:
+                indb = (indb + 1) % n2
+            while orientation(b[indb], a[inda], a[(n1 + inda - 1) % n1]) <= 0:
+                inda = (inda - 1 + n1) % n1
+                done = False
+        lowera, lowerb = inda, indb
+
+        ret = []
+        ind = uppera
+        ret.append(a[uppera])
+        while ind != lowera:
+            ind = (ind + 1) % n1
+            ret.append(a[ind])
+        ind = lowerb
+        ret.append(b[lowerb])
+        while ind != upperb:
+            ind = (ind + 1) % n2
+            ret.append(b[ind])
+
+        frames.append((list(a), list(b), list(ret)))
+        return ret
+
     def divide(points, frames):
         if len(points) <= 5:
             hull = brute_hull(points)
-            frames.append((list(hull), [], []))  # Record the hull
+            frames.append((list(hull), [], []))
             return hull
 
         mid_idx = len(points) // 2
         left = points[:mid_idx]
         right = points[mid_idx:]
-
-        # Convex hull for the left and right sets
         left_hull = divide(left, frames)
-        frames.append((list(left_hull), [], []))  # Add left hull for persistent display
         right_hull = divide(right, frames)
-        frames.append((list(left_hull), list(right_hull), []))  # Show both hulls before merging
-
-        # Merging the convex hulls
+        frames.append((list(left_hull), list(right_hull), []))
         return merger(left_hull, right_hull, frames)
 
-    # Determine points (from file or random)
-    num_points = 10  # Number of random points
-    points_from_file = None
-    random_points=None
-    if points_from_file:
-        random_points = points_from_file
-        print(f"Using {len(random_points)} points from input.txt.")
+    # Handle input similarly to jarvis_main
+    points_from_file = data.get("payload", [])
+    if points_from_file == [[0]]:
+        print("Received [[0]]. Generating 20 random points.")
+        random_data = np.random.randint(0, 100, size=(20, 2))
+        random_points = [Point(x, y) for x, y in random_data]
+    elif points_from_file:
+        points_array = np.array(points_from_file)
+        random_points = [Point(x, y) for x, y in points_array]
+        print(f"Using {len(random_points)} points from input data.")
     else:
-        print("Input file is empty or not found. Generating random points.")
-        random_points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(num_points)]
+        print("Input data is empty. Generating 10 random points.")
+        random_data = np.random.randint(0, 100, size=(10, 2))
+        random_points = [Point(x, y) for x, y in random_data]
 
     random_points.sort(key=lambda p: (p.x, p.y))
+    min_x, max_x = min(p.x for p in random_points), max(p.x for p in random_points)
+    min_y, max_y = min(p.y for p in random_points), max(p.y for p in random_points)
 
-    # Calculate dynamic plot limits
-    min_x = min(p.x for p in random_points)
-    max_x = max(p.x for p in random_points)
-    min_y = min(p.y for p in random_points)
-    max_y = max(p.y for p in random_points)
-
-    # Add padding to the plot limits for better visualization
-    padding = 10
-    plot_min_x = min_x - padding
-    plot_max_x = max_x + padding
-    plot_min_y = min_y - padding
-    plot_max_y = max_y + padding
-
-    # Visualization setup
     fig, ax = plt.subplots()
-
-    # Compute convex hull with divide and conquer and record frames for animation
     frames = []
     hull = divide(random_points, frames)
-    print("here", frames)
 
-    # Animation function
     def animate(frame_idx):
-        print("index", frame_idx)
         ax.clear()
-        ax.set_xlim(plot_min_x, plot_max_x)
-        ax.set_ylim(plot_min_y, plot_max_y)
-
-        # Plot all points
+        ax.set_xlim(min_x - 10, max_x + 10)
+        ax.set_ylim(min_y - 10, max_y + 10)
         ax.scatter([p.x for p in random_points], [p.y for p in random_points], color='blue')
-
-        # Get current frame data
         left_hull, right_hull, merged_hull = frames[frame_idx]
+        for h in [left_hull, right_hull, merged_hull]:
+            if h:
+                ax.plot([p.x for p in h + [h[0]]], [p.y for p in h + [h[0]]], 'r-')
 
-        # Plot left hull in gray (keep it on canvas while constructing right hull)
-        if left_hull:
-            for i in range(len(left_hull)):
-                p1 = left_hull[i]
-                p2 = left_hull[(i + 1) % len(left_hull)]
-                ax.plot([p1.x, p2.x], [p1.y, p2.y], 'gray')
+    # Create animation object
+    # Note: We won't use anim.save(), just using it to structure frames.
+    anim = FuncAnimation(fig, animate, frames=len(frames), interval=1000, repeat=False)
 
-        # Plot right hull in gray once it's constructed
-        if right_hull:
-            for i in range(len(right_hull)):
-                p1 = right_hull[i]
-                p2 = right_hull[(i + 1) % len(right_hull)]
-                ax.plot([p1.x, p2.x], [p1.y, p2.y], 'gray')
-
-        # Plot merged hull in red once both hulls are ready
-        if merged_hull:
-            for i in range(len(merged_hull)):
-                p1 = merged_hull[i]
-                p2 = merged_hull[(i + 1) % len(merged_hull)]
-                ax.plot([p1.x, p2.x], [p1.y, p2.y], 'r-')
-
-    # Create the animation
-    ani = FuncAnimation(fig, animate, frames=len(frames), interval=1000, repeat=False)
-    plt.title("Divide and Conquer Convex Hull (Animation)")
-    plt.xlabel("X")
-    plt.ylabel("Y")
+    # Manually generate frames (as requested)
     buf = io.BytesIO()
-    ff = []
+    img_frames = []
+    for i in range(len(frames)):
+        animate(i)
+        fig.canvas.draw()
+        img = Image.frombytes('RGB', fig.canvas.get_width_height(), fig.canvas.tostring_rgb())
+        img_frames.append(img)
 
-    for i in range(ani.save_count):
-        ani._draw_frame(i)
-        fig.canvas.draw()  
-        img = Image.frombytes(
-            'RGB', fig.canvas.get_width_height(), fig.canvas.tostring_rgb()
-        )
-        ff.append(img)
-
-   
-    ff[0].save(
+    img_frames[0].save(
         buf,
         format="GIF",
         save_all=True,
-        append_images=ff[1:],
+        append_images=img_frames[1:],
         loop=0,
-        duration=200  
+        duration=1000  # Frame duration in milliseconds
     )
-    buf.seek(0)
 
+    buf.seek(0)
     base64_image = base64.b64encode(buf.read()).decode('ascii')
     buf.close()
-    print("Output File Saved")
+
+    print("GIF Created and Encoded to Base64")
     return base64_image

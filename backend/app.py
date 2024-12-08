@@ -3,6 +3,7 @@ from flask_cors import CORS
 import subprocess
 import os
 import base64
+import matplotlib
 from io import BytesIO
 from matplotlib.figure import Figure
 from bruteforce import brute_main
@@ -10,6 +11,7 @@ from divide import divide_main
 from Gramham import graham_main
 from jarvis import jarvis_main
 from monotone import monotone_main
+matplotlib.use('Agg')  # Added by Yash A -- My app crashing without this.
 
 app = Flask(__name__)
 CORS(app)  # Allow cross-origin requests
