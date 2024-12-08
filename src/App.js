@@ -34,7 +34,7 @@ const App = () => {
   const [numPoints, setNumPoints] = useState(10); // Number of points to generate
 
   const runAlgorithm = async (algorithmName) => {
-    setIsLoading(true);
+    setAlgorithmOutput(false);
     setCurrentAlgorithm(algorithmName);
     try {
       const response = await axios.post(`https://convex-hull-backend.vercel.app/run-${algorithmName}`, {
@@ -320,7 +320,7 @@ combine the lower and upper hulls
             />
           </div>
           {!algorithmOutput && <p style={{ marginTop: '20px' }}>Run an algorithm to see the output here...</p>}
-          {algorithmOutput && (
+          {algorithmOutput&&(
             <ReportSection
               title={`${currentAlgorithm.charAt(0).toUpperCase() + currentAlgorithm.slice(1)} Algorithm Output`}
               content={
