@@ -157,10 +157,19 @@ def divide_main(data):
         ax.set_xlim(min_x - 10, max_x + 10)
         ax.set_ylim(min_y - 10, max_y + 10)
         ax.scatter([p.x for p in random_points], [p.y for p in random_points], color='blue')
+
         left_hull, right_hull, merged_hull = frames[frame_idx]
-        for h in [left_hull, right_hull, merged_hull]:
+
+        # Plot intermediate hulls in grey dotted lines
+        for h in [left_hull, right_hull]:
             if h:
-                ax.plot([p.x for p in h + [h[0]]], [p.y for p in h + [h[0]]], 'r-')
+                ax.plot([p.x for p in h + [h[0]]],
+                        [p.y for p in h + [h[0]]], 'k--', linewidth=1, alpha=0.7)
+
+        # Plot the final merged hull in red if it exists
+        if frame_idx == len(frames) - 1 and merged_hull:
+            ax.plot([p.x for p in merged_hull + [merged_hull[0]]],
+                    [p.y for p in merged_hull + [merged_hull[0]]], 'r-', linewidth=2)
 
     # Create animation object
     # Note: We won't use anim.save(), just using it to structure frames.
