@@ -37,7 +37,7 @@ const App = () => {
     setIsLoading(true);
     setCurrentAlgorithm(algorithmName);
     try {
-      const response = await axios.post(`http://127.0.0.1:5001/run-${algorithmName}`, {
+      const response = await axios.post(`https://convex-hull-backend.vercel.app/run-${algorithmName}`, {
         payload,
         numPoints,
       });
