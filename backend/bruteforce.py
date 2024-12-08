@@ -69,22 +69,18 @@ def brute_main(data):
             # Show all points as a scatter plot
             scatter.set_offsets([(p.x, p.y) for p in self.points])
 
-            # Show intermediate line checking
+            # Grey dotted line for intermediate steps
             if frame < len(self.intermediate_steps):
                 p1, p2 = self.intermediate_steps[frame]
                 check_line.set_data([p1.x, p2.x], [p1.y, p2.y])
+                check_line.set_linestyle('--')  # Dotted line
+                check_line.set_color('grey')  # Grey color
             else:
-                # Clear the green checking line after intermediate steps are completed
+                # Clear the grey dotted line after intermediate steps are completed
                 check_line.set_data([], [])
 
-            # Display each finalized edge in red progressively
-            if frame < len(self.finalized_edges):
-                edge = self.finalized_edges[:frame + 1]
-                hull_xs = [point.x for p1, p2 in edge for point in [p1, p2]]
-                hull_ys = [point.y for p1, p2 in edge for point in [p1, p2]]
-                hull_lines.set_data(hull_xs, hull_ys)
-            elif frame >= len(self.intermediate_steps):
-                # Close the hull loop after all intermediate steps are done
+            # Finalized red hull: Draw once after all intermediate steps are done
+            if frame == 0:  # Set up the final hull on the first frame
                 self.sort_hull_counterclockwise()
                 hull_xs = [p.x for p in self.hull] + [self.hull[0].x]
                 hull_ys = [p.y for p in self.hull] + [self.hull[0].y]
@@ -109,8 +105,15 @@ def brute_main(data):
 
     # Create the figure and axis for the animation
     fig, ax = plt.subplots()
-    ax.set_xlim(0, 100)
-    ax.set_ylim(0, 100)
+    # Calculate dynamic limits based on the points
+    x_values = [p.x for p in fixed_points]
+    y_values = [p.y for p in fixed_points]
+    x_min, x_max = min(x_values) - 10, max(x_values) + 10
+    y_min, y_max = min(y_values) - 10, max(y_values) + 10
+
+    # Set dynamic limits for the plot
+    ax.set_xlim(x_min, x_max)
+    ax.set_ylim(y_min, y_max)
 
     # Scatter plot for all points
     scatter = ax.scatter([], [], color='blue')

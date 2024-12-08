@@ -8,6 +8,7 @@ from PIL import Image
 
 def monotone_main(data):
     # Extract numPoints from data, default to 20 if not provided
+    print(data)
     num_points = int(data.get('numPoints', 20))
 
 
@@ -45,7 +46,7 @@ def monotone_main(data):
     payload = data.get('payload', [])
 
     # If no payload points are provided, generate random points
-    if not payload:
+    if not payload or payload == [[0]]:
         points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(num_points)]
     else:
         points = [Point(x, y) for x, y in payload]
