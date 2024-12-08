@@ -196,9 +196,11 @@ def divide_main(data):
     # Compute convex hull with divide and conquer and record frames for animation
     frames = []
     hull = divide(random_points, frames)
+    print("here", frames)
 
     # Animation function
     def animate(frame_idx):
+        print("index", frame_idx)
         ax.clear()
         ax.set_xlim(plot_min_x, plot_max_x)
         ax.set_ylim(plot_min_y, plot_max_y)
