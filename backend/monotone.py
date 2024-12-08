@@ -8,7 +8,6 @@ from PIL import Image
 
 def monotone_main(data):
     # Extract numPoints from data, default to 20 if not provided
-    print(data)
     num_points = int(data.get('numPoints', 20))
 
 
