@@ -34,6 +34,7 @@ const App = () => {
   const [numPoints, setNumPoints] = useState(10); // Number of points to generate
 
   const runAlgorithm = async (algorithmName) => {
+    setIsLoading(true)
     setAlgorithmOutput(false);
     setCurrentAlgorithm(algorithmName);
     try {
