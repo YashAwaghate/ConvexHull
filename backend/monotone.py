@@ -45,7 +45,7 @@ def monotone_main(data):
     payload = data.get('payload', [])
 
     # If no payload points are provided, generate random points
-    if not payload or len(payload) == 0:
+    if not payload or len(payload) == 0: # Fixed this
         points = [Point(random.randint(0, 100), random.randint(0, 100)) for _ in range(num_points)]
     else:
         points = [Point(x, y) for x, y in payload]
