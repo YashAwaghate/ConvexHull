@@ -80,6 +80,7 @@ const App = () => {
                   algorithms, including Brute Force, Jarvis March, Graham Scan, Divide & Conquer, and Chan's Algorithm.
                   The tool will also illustrate their time complexities through dynamic visual representations.
                 </p>
+                <a href='https://drive.google.com/file/d/1MrtqRdVBRH2WFoA5eWA8-aeSepJpQMwT/view?pli=1' target="_blank">Link to our final presentation</a>
                 <h4>Objectives:</h4>
                 <ul>
                   <li>Implement different convex hull algorithms for visualization.</li>
